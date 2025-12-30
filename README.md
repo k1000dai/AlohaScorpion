@@ -1,6 +1,7 @@
 # AlohaScorpion
 
-
+![AlohaScorpion](assets/mainimage.jpg)
+![leader](assets/leader.jpg)
 
 AlohaScorpion is a 7 dof + gripper, dual-arm mobile manipulator with lift. It is designed for research and development in robotics, particularly in manipulation and mobile robotics.
 This project is heavily inspired by the 
