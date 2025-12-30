@@ -1,0 +1,503 @@
+# Copyright 2024 The HuggingFace Inc. team. All rights reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# TODO(aliberts, Steven, Pepijn): use gRPC calls instead of zmq?
+
+import base64
+import inspect
+import json
+import logging
+from functools import cached_property
+import os
+import time
+from typing import Any
+
+import cv2
+import numpy as np
+
+from lerobot.cameras.configs import CameraConfig
+from lerobot.utils.errors import DeviceAlreadyConnectedError, DeviceNotConnectedError
+
+from ..robot import Robot
+from .config_lekiwi import LeKiwiClientConfig
+from .lift_axis import LiftAxisConfig
+
+logging.basicConfig(
+    # level=logging.INFO,
+    format="[%(filename)s:%(lineno)d] %(message)s"
+)
+
+
+class LeKiwiClient(Robot):
+    config_class = LeKiwiClientConfig
+    name = "lekiwi_client"
+
+    def __init__(self, config: LeKiwiClientConfig):
+        import zmq
+
+        self._zmq = zmq
+        super().__init__(config)
+        self.config = config
+        self.id = config.id
+        self.robot_type = config.type
+
+        self.remote_ip = config.remote_ip
+        self.port_zmq_cmd = config.port_zmq_cmd
+        self.port_zmq_observations = config.port_zmq_observations
+
+        self.teleop_keys = config.teleop_keys
+
+        self.polling_timeout_ms = config.polling_timeout_ms
+        self.connect_timeout_s = config.connect_timeout_s
+
+        self.zmq_context = None
+        self.zmq_cmd_socket = None
+        self.zmq_observation_socket = None
+
+        self.last_frames = {}
+
+        self.last_remote_state = {}
+
+        # Define three speed levels and a current index
+        self.speed_levels = [
+            {"xy": 0.05, "theta": 30},  # slow
+            {"xy": 0.1, "theta": 45},  # medium
+            {"xy": 0.15, "theta": 60},  # fast
+        ]
+        self.speed_index = 0  # Start at slow
+        self.tap_toggle_threshold_s = 0.25
+        self._key_press_start = {}
+        self._dual_key_reverse = {}
+        self._key_is_pressed = {}
+
+        self._is_connected = False
+        self.logs = {}
+
+    @cached_property
+    def _state_ft(self) -> dict[str, type]:
+        return dict.fromkeys(
+            (
+                "arm_left_joint0.pos",
+                "arm_left_joint1.pos",
+                "arm_left_joint2.pos",
+                "arm_left_joint3.pos",
+                "arm_left_joint4.pos",
+                "arm_left_joint5.pos",
+                "arm_left_joint6.pos",
+                "arm_left_gripper.pos",
+                "arm_right_joint0.pos",
+                "arm_right_joint1.pos",
+                "arm_right_joint2.pos",
+                "arm_right_joint3.pos",
+                "arm_right_joint4.pos",
+                "arm_right_joint5.pos",
+                "arm_right_joint6.pos",
+                "arm_right_gripper.pos",
+                "x.vel",
+                "y.vel",
+                "theta.vel",
+                "lift_axis.height_mm",
+                # "lift_axis.vel",
+            ),
+            float,
+        )
+
+    @cached_property
+    def _state_order(self) -> tuple[str, ...]:
+        return tuple(self._state_ft.keys())
+
+    @cached_property
+    def _cameras_ft(self) -> dict[str, tuple[int, int, int]]:
+        return {name: (cfg.height, cfg.width, 3) for name, cfg in self.config.cameras.items()}
+
+    @cached_property
+    def observation_features(self) -> dict[str, type | tuple]:
+        return {**self._state_ft, **self._cameras_ft}
+
+    @cached_property
+    def action_features(self) -> dict[str, type]:
+        return self._state_ft
+
+    @property
+    def is_connected(self) -> bool:
+        return self._is_connected
+
+    @property
+    def is_calibrated(self) -> bool:
+        pass
+
+    def connect(self) -> None:
+        """Establishes ZMQ sockets with the remote mobile robot"""
+
+        if self._is_connected:
+            raise DeviceAlreadyConnectedError(
+                "AlohaMini Daemon is already connected. Do not run `robot.connect()` twice."
+            )
+
+        zmq = self._zmq
+        self.zmq_context = zmq.Context()
+        self.zmq_cmd_socket = self.zmq_context.socket(zmq.PUSH)
+        zmq_cmd_locator = f"tcp://{self.remote_ip}:{self.port_zmq_cmd}"
+        self.zmq_cmd_socket.connect(zmq_cmd_locator)
+        self.zmq_cmd_socket.setsockopt(zmq.CONFLATE, 1)
+
+        self.zmq_observation_socket = self.zmq_context.socket(zmq.PULL)
+        zmq_observations_locator = f"tcp://{self.remote_ip}:{self.port_zmq_observations}"
+        self.zmq_observation_socket.connect(zmq_observations_locator)
+        self.zmq_observation_socket.setsockopt(zmq.CONFLATE, 1)
+
+        poller = zmq.Poller()
+        poller.register(self.zmq_observation_socket, zmq.POLLIN)
+        socks = dict(poller.poll(self.connect_timeout_s * 1000))
+        if self.zmq_observation_socket not in socks or socks[self.zmq_observation_socket] != zmq.POLLIN:
+            raise DeviceNotConnectedError("Timeout waiting for AlohaMini Host to connect expired.")
+
+        self._is_connected = True
+
+    def calibrate(self) -> None:
+        pass
+
+    def _poll_and_get_latest_message(self) -> str | None:
+        """Polls the ZMQ socket for a limited time and returns the latest message string."""
+        zmq = self._zmq
+        poller = zmq.Poller()
+        poller.register(self.zmq_observation_socket, zmq.POLLIN)
+
+        try:
+            socks = dict(poller.poll(self.polling_timeout_ms))
+        except zmq.ZMQError as e:
+            logging.error(f"ZMQ polling error: {e}")
+            return None
+
+        if self.zmq_observation_socket not in socks:
+            logging.info("No new data available within timeout.")
+            return None
+
+        last_msg = None
+        while True:
+            try:
+                msg = self.zmq_observation_socket.recv_string(zmq.NOBLOCK)
+                last_msg = msg
+            except zmq.Again:
+                break
+
+        if last_msg is None:
+            logging.info("Poller indicated data, but failed to retrieve message.")
+
+        return last_msg
+
+    def _parse_observation_json(self, obs_string: str) -> dict[str, Any] | None:
+        """Parses the JSON observation string."""
+        try:
+            return json.loads(obs_string)
+        except json.JSONDecodeError as e:
+            logging.error(f"Error decoding JSON observation: {e}")
+            return None
+
+    def _decode_image_from_b64(self, image_b64: str) -> np.ndarray | None:
+        """Decodes a base64 encoded image string to an OpenCV image."""
+        if not image_b64:
+            return None
+        try:
+            jpg_data = base64.b64decode(image_b64)
+            np_arr = np.frombuffer(jpg_data, dtype=np.uint8)
+            frame = cv2.imdecode(np_arr, cv2.IMREAD_COLOR)
+            if frame is None:
+                logging.warning("cv2.imdecode returned None for an image.")
+            return frame
+        except (TypeError, ValueError) as e:
+            logging.error(f"Error decoding base64 image data: {e}")
+            return None
+
+    def _remote_state_from_obs(
+        self, observation: dict[str, Any]
+    ) -> tuple[dict[str, np.ndarray], dict[str, Any]]:
+        """Extracts frames, and state from the parsed observation."""
+
+        flat_state = {key: observation.get(key, 0.0) for key in self._state_order}
+
+        state_vec = np.array([flat_state[key] for key in self._state_order], dtype=np.float32)
+
+        obs_dict: dict[str, Any] = {**flat_state, "observation.state": state_vec}
+        # lineno = frame.f_lineno
+        # print(f"[{filename}:{lineno}] obs_dict:{obs_dict}")
+        # print(f"[{filename}:{frame.f_lineno}] obs_dict:{obs_dict}")
+
+        # logging.warning("obs_dict: %s", obs_dict)
+
+        # Decode images
+        current_frames: dict[str, np.ndarray] = {}
+        camera_names = set(self.config.cameras.keys()) if self.config.cameras else None
+        for cam_name, image_b64 in observation.items():
+            if cam_name in self._state_order:
+                continue
+            if camera_names is not None and cam_name not in camera_names:
+                continue
+            if not isinstance(image_b64, str):
+                continue
+            frame = self._decode_image_from_b64(image_b64)
+            if frame is not None:
+                current_frames[cam_name] = frame
+
+        self._maybe_update_camera_config(current_frames)
+
+        return current_frames, obs_dict
+
+    def _maybe_update_camera_config(self, frames: dict[str, np.ndarray]) -> None:
+        if self.config.cameras or not frames:
+            return
+
+        self.config.cameras = {
+            name: CameraConfig(width=frame.shape[1], height=frame.shape[0]) for name, frame in frames.items()
+        }
+        self.__dict__.pop("_cameras_ft", None)
+        self.__dict__.pop("observation_features", None)
+
+    def _get_data(self) -> tuple[dict[str, np.ndarray], dict[str, Any], dict[str, Any]]:
+        """
+        Polls the video socket for the latest observation data.
+
+        Attempts to retrieve and decode the latest message within a short timeout.
+        If successful, updates and returns the new frames, speed, and arm state.
+        If no new data arrives or decoding fails, returns the last known values.
+        """
+
+        # 1. Get the latest message string from the socket
+        latest_message_str = self._poll_and_get_latest_message()
+
+        # 2. If no message, return cached data
+        if latest_message_str is None:
+            return self.last_frames, self.last_remote_state
+
+        # 3. Parse the JSON message
+        observation = self._parse_observation_json(latest_message_str)
+
+        # 4. If JSON parsing failed, return cached data
+        if observation is None:
+            return self.last_frames, self.last_remote_state
+
+        # 5. Process the valid observation data
+        try:
+            new_frames, new_state = self._remote_state_from_obs(observation)
+        except Exception as e:
+            logging.error(f"Error processing observation data, serving last observation: {e}")
+            return self.last_frames, self.last_remote_state
+
+        self.last_frames = new_frames
+        self.last_remote_state = new_state
+
+        return new_frames, new_state
+
+    def get_observation(self) -> dict[str, Any]:
+        """
+        Capture observations from the remote robot: current follower arm positions,
+        present wheel speeds (converted to body-frame velocities: x, y, theta),
+        and a camera frame. Receives over ZMQ, translate to body-frame vel
+        """
+        if not self._is_connected:
+            raise DeviceNotConnectedError(
+                "AlohaMiniClient is not connected. You need to run `robot.connect()`."
+            )
+
+        frames, obs_dict = self._get_data()
+
+        # Loop over each configured camera
+        for cam_name, frame in frames.items():
+            if frame is None:
+                logging.warning("Frame is None")
+                frame = np.zeros((640, 480, 3), dtype=np.uint8)
+            obs_dict[cam_name] = frame
+
+        return obs_dict
+
+    def _update_dual_key_toggle(self, pressed_keys: set[str], key: str) -> None:
+        now = time.monotonic()
+        was_pressed = self._key_is_pressed.get(key, False)
+        is_pressed = key in pressed_keys
+
+        if is_pressed and not was_pressed:
+            self._key_press_start[key] = now
+        elif not is_pressed and was_pressed:
+            pressed_duration = now - self._key_press_start.get(key, now)
+            if pressed_duration <= self.tap_toggle_threshold_s:
+                self._dual_key_reverse[key] = not self._dual_key_reverse.get(key, False)
+            self._key_press_start.pop(key, None)
+
+        self._key_is_pressed[key] = is_pressed
+
+    def _is_long_press(self, key: str) -> bool:
+        start_time = self._key_press_start.get(key)
+        if start_time is None:
+            return False
+        return time.monotonic() - start_time >= self.tap_toggle_threshold_s
+
+    def _from_keyboard_to_base_action(self, pressed_keys: np.ndarray):
+        pressed_key_set = set(pressed_keys)
+
+        # Speed control
+        if self.teleop_keys["speed_up"] in pressed_key_set:
+            self.speed_index = min(self.speed_index + 1, 2)
+        if self.teleop_keys["speed_down"] in pressed_key_set:
+            self.speed_index = max(self.speed_index - 1, 0)
+        speed_setting = self.speed_levels[self.speed_index]
+        xy_speed = speed_setting["xy"]  # e.g. 0.1, 0.25, or 0.4
+        theta_speed = speed_setting["theta"]  # e.g. 30, 60, or 90
+
+        x_cmd = 0.0  # m/s forward/backward
+        y_cmd = 0.0  # m/s lateral
+        theta_cmd = 0.0  # deg/s rotation
+
+        forward_key = self.teleop_keys["forward"]
+        backward_key = self.teleop_keys["backward"]
+        left_key = self.teleop_keys["left"]
+        right_key = self.teleop_keys["right"]
+
+        if forward_key == backward_key:
+            self._update_dual_key_toggle(pressed_key_set, forward_key)
+            if forward_key in pressed_key_set and self._is_long_press(forward_key):
+                if self._dual_key_reverse.get(forward_key, False):
+                    x_cmd -= xy_speed
+                else:
+                    x_cmd += xy_speed
+        else:
+            if forward_key in pressed_key_set:
+                x_cmd += xy_speed
+            if backward_key in pressed_key_set:
+                x_cmd -= xy_speed
+
+        if left_key == right_key:
+            self._update_dual_key_toggle(pressed_key_set, right_key)
+            if right_key in pressed_key_set and self._is_long_press(right_key):
+                if self._dual_key_reverse.get(right_key, False):
+                    y_cmd += xy_speed
+                else:
+                    y_cmd -= xy_speed
+        else:
+            if left_key in pressed_key_set:
+                y_cmd += xy_speed
+            if right_key in pressed_key_set:
+                y_cmd -= xy_speed
+
+        rotate_left_key = self.teleop_keys["rotate_left"]
+        rotate_right_key = self.teleop_keys["rotate_right"]
+        if rotate_left_key == rotate_right_key:
+            self._update_dual_key_toggle(pressed_key_set, rotate_left_key)
+            if rotate_left_key in pressed_key_set and self._is_long_press(rotate_left_key):
+                if self._dual_key_reverse.get(rotate_left_key, False):
+                    theta_cmd += theta_speed
+                else:
+                    theta_cmd -= theta_speed
+        else:
+            if rotate_left_key in pressed_key_set:
+                theta_cmd += theta_speed
+            if rotate_right_key in pressed_key_set:
+                theta_cmd -= theta_speed
+
+        return {
+            "x.vel": x_cmd,
+            "y.vel": y_cmd,
+            "theta.vel": theta_cmd,
+        }
+
+    # lift_axis.vel
+    # def _from_keyboard_to_lift_action(self, pressed_keys: np.ndarray):
+    #     LIFT_VEL = 1000  # 觉得慢/快就改
+    #     up_pressed = self.teleop_keys.get("lift_up", "u") in pressed_keys
+    #     dn_pressed = self.teleop_keys.get("lift_down", "j") in pressed_keys
+
+    #     if up_pressed and not dn_pressed:
+    #         v = +LIFT_VEL
+    #     elif dn_pressed and not up_pressed:
+    #         v = -LIFT_VEL
+    #     else:
+    #         v = 0.0
+    #     return {"lift_axis.vel": int(v)}
+
+    # lift_axis.height_mm
+    def _from_keyboard_to_lift_action(self, pressed_keys: np.ndarray):
+        pressed_key_set = set(pressed_keys)
+        lift_up_key = self.teleop_keys.get("lift_up", "u")
+        lift_down_key = self.teleop_keys.get("lift_down", "j")
+        up_pressed = lift_up_key in pressed_key_set
+        dn_pressed = lift_down_key in pressed_key_set
+
+        # Read the last height (mm) reported by the Host
+        h_now = float(self.last_remote_state.get("lift_axis.height_mm", 0.0))
+        # print(f"h_now:{h_now}")
+
+        if lift_up_key == lift_down_key:
+            self._update_dual_key_toggle(pressed_key_set, lift_up_key)
+            if not up_pressed or not self._is_long_press(lift_up_key):
+                return {"lift_axis.height_mm": h_now}
+
+            if self._dual_key_reverse.get(lift_up_key, False):
+                h_target = h_now - LiftAxisConfig.step_mm
+            else:
+                h_target = h_now + LiftAxisConfig.step_mm
+        else:
+            if not (up_pressed or dn_pressed):
+                return {"lift_axis.height_mm": h_now}
+
+            # Increment on each key press
+            if up_pressed and not dn_pressed:
+                h_target = h_now + LiftAxisConfig.step_mm
+            elif dn_pressed and not up_pressed:
+                h_target = h_now - LiftAxisConfig.step_mm
+            else:
+                h_target = h_now
+        # print(f"h_target:{h_target}")
+
+        # Send "target height (mm)" directly
+        return {"lift_axis.height_mm": h_target}
+
+    def configure(self):
+        pass
+
+    def send_action(self, action: dict[str, Any]) -> dict[str, Any]:
+        """Command AlohaMini to move to a target joint configuration. Translates to motor space + sends over ZMQ
+
+        Args:
+            action (np.ndarray): array containing the goal positions for the motors.
+
+        Raises:
+            RobotDeviceNotConnectedError: if robot is not connected.
+
+        Returns:
+            np.ndarray: the action sent to the motors, potentially clipped.
+        """
+        if not self._is_connected:
+            raise DeviceNotConnectedError(
+                "ManipulatorRobot is not connected. You need to run `robot.connect()`."
+            )
+
+        self.zmq_cmd_socket.send_string(json.dumps(action))  # action is in motor space
+
+        # TODO(Steven): Remove the np conversion when it is possible to record a non-numpy array value
+        actions = np.array([action.get(k, 0.0) for k in self._state_order], dtype=np.float32)
+
+        action_sent = {key: actions[i] for i, key in enumerate(self._state_order)}
+        action_sent["action"] = actions
+        return action_sent
+
+    def disconnect(self):
+        """Cleans ZMQ comms"""
+
+        if not self._is_connected:
+            raise DeviceNotConnectedError(
+                "AlohaMini is not connected. You need to run `robot.connect()` before disconnecting."
+            )
+        self.zmq_observation_socket.close()
+        self.zmq_cmd_socket.close()
+        self.zmq_context.term()
+        self._is_connected = False
