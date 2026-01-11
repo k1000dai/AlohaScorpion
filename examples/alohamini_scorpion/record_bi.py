@@ -41,11 +41,10 @@ def main():
     robot_config = LeKiwiClientConfig(remote_ip=args.remote_ip, id=args.robot_id)
 
     dual_scorpion_config = DualScorpionLeaderConfig(
-        right_arm_port="/dev/am_arm_leader_right",
-        left_arm_port="/dev/am_arm_leader_left",
+        right_arm_port="/dev/right_arm",
+        left_arm_port="/dev/left_arm",
     )
     leader_arm = DualScorpionLeader(dual_scorpion_config)
-
 
     keyboard_config = KeyboardTeleopConfig()
 
