@@ -37,8 +37,8 @@ if NO_LEADER:
 robot_config = LeKiwiClientConfig(remote_ip=args.remote_ip, id="my_alohamini")
 
 dual_scorpion_config = DualScorpionLeaderConfig(
-    right_arm_port="/dev/am_arm_leader_right",
-    left_arm_port="/dev/am_arm_leader_left",
+    right_arm_port="/dev/right_arm",
+    left_arm_port="/dev/left_arm",
 )
 leader = DualScorpionLeader(dual_scorpion_config)
 
