@@ -94,3 +94,7 @@ python examples/alohamini_scorpion/record_bi.py \
 --remote_ip ip_address_of_host \
 --dataset user/my_dataset_name 
 ```
+
+## License
+This project is licensed under the Apache 2.0 License - see the [LICENSE](LICENSE) file for details.
+
