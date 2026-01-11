@@ -20,7 +20,9 @@ def main():
     parser.add_argument("--num_episodes", type=int, default=2, help="Number of episodes to record")
     parser.add_argument("--fps", type=int, default=30, help="Frames per second")
     parser.add_argument("--episode_time", type=int, default=60, help="Duration of each episode in seconds")
-    parser.add_argument("--task_description", type=str, default="My task description", help="Description of the task")
+    parser.add_argument(
+        "--task_description", type=str, default="My task description", help="Description of the task"
+    )
     parser.add_argument("--hf_model_id", type=str, required=True, help="HuggingFace model repo id")
     parser.add_argument("--hf_dataset_id", type=str, required=True, help="HuggingFace dataset repo id")
     parser.add_argument("--remote_ip", type=str, default="127.0.0.1", help="LeKiwi host IP address")
