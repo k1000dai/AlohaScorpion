@@ -1,0 +1,3 @@
+[submodule "third_party/PincOpen"]
+	path = third_party/PincOpen
+	url = https://github.com/pollen-robotics/PincOpen.git
