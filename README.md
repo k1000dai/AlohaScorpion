@@ -1,7 +1,7 @@
 # AlohaScorpion
 
 <p align="center">
-  <img src="assets/mainimage.jpg" alt="AlohaScorpion" width="45%" />
+  <img src="assets/IMG_5167.jpg" alt="AlohaScorpion" width="45%" />
   <img src="assets/leader.jpg" alt="leader" width="45%" />
 </p>
 
@@ -12,11 +12,12 @@ This project is heavily inspired by the
 - Alohamini(https://github.com/liyiteng/AlohaMini)
 - Xlerobot(https://github.com/Vector-Wangel/XLeRobot)
 - DualScorpion(https://github.com/momoiorg-repository/dual_scorpion)
+- PincOpen(https://github.com/pollen-robotics/PincOpen)
 
 ## Features
 - 7 degrees of freedom per arm for enhanced manipulation capabilities. inspired by dual_scorpion
 
-- Gripper for object handling. use xlerobot tpu gripper. Also, some base parts are compatible with xlerobot.
+- Gripper for object handling. We use the PincOpen gripper, which is open-source parallel-finger gripper, derived from Pollen Robotics Reachy 2's gripper. It is compatible with the arms of AlohaScorpion.
 
 - Mobile base for navigation and mobility. based on alohamini.
 
@@ -27,7 +28,10 @@ This project is heavily inspired by the
 - Large battery capacity for extended operation time. based on the Xlerobot. Use Anker Solix C300 Portable Power Station 288Wh.
 
 ## Bill of Materials (BOM)
-The complete Bill of Materials (BOM) can be found in the [BOM.md](BOM.md) file.
+The complete Bill of Materials (BOM) can be found in the this Google Sheet : https://docs.google.com/spreadsheets/d/1W7IXB0Fid7SDyZUYEEcC63fRW-HXA5QO-rrAWQz4-Ek/edit?usp=sharing.
+
+If you want to use  parallel-finger gripper, you can refer PincOpen github repository[https://github.com/pollen-robotics/PincOpen] for the BOM and assembly instructions. The gripper is compatible with the arms of AlohaScorpion. You need to use the updated mount plate in hardware/misc/stl/sointerface.stl.
+
 
 ## Assembly Instructions
 Please see AlohaMini's assembly instructions as the mobile base and lift mechanism are almost the same.
