@@ -14,6 +14,15 @@ This project is heavily inspired by the
 - DualScorpion(https://github.com/momoiorg-repository/dual_scorpion)
 - PincOpen(https://github.com/pollen-robotics/PincOpen)
 
+
+## Update Log 
+2/14 : Updated to the version 2.0. Better BOM, better chassis design, better arm position, pincopen gripper.
+
+## To Do
+[ ] Add more details to the assembly instructions.
+[ ] Support VLA training.
+[ ] Support URDF and simulators.
+
 ## Features
 - 7 degrees of freedom per arm for enhanced manipulation capabilities. inspired by dual_scorpion
 
