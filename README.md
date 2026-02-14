@@ -140,16 +140,15 @@ lerobot-train \
 
 #### Evaluation model
 ```
-python examples/alohamini/evaluate_bi.py \
-  --num_episodes 3 \
-  --fps 20 \
-  --episode_time 45 \
-  --task_description "Pick and place task" \
-  --hf_model_id liyitenga/act_policy \
-  --hf_dataset_id liyitenga/eval_dataset \
-  --remote_ip 127.0.0.1 \
-  --robot_id my_alohamini \
-  --hf_model_id ./outputs/train/act_your_dataset1/checkpoints/020000/pretrained_model
+python examples/alohamini_scorpion/evaluate_bi.py \
+  --num_episodes 1 \
+  --fps 10 \
+  --episode_time 180  \
+  --task_description "test"  \
+  --hf_model_id k1000dai/act_alohascorpion_20k  \
+  --hf_dataset_id k1000dai/eval_dataset   \
+  --remote_ip 100.74.118.11   \
+  --robot_id my_alohamini
 ```
 ## License
 This project is licensed under the Apache 2.0 License - see the [LICENSE](LICENSE) file for details.

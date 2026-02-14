@@ -38,10 +38,22 @@ def main():
     # === Policy ===
     policy = ACTPolicy.from_pretrained(args.hf_model_id)
 
+    # Prime one observation to let the client discover camera names from host stream.
+    robot.get_observation()
+
     # === Dataset features ===
     action_features = hw_to_dataset_features(robot.action_features, ACTION)
     obs_features = hw_to_dataset_features(robot.observation_features, OBS_STR)
     dataset_features = {**action_features, **obs_features}
+
+    expected_image_keys = set(policy.config.image_features.keys())
+    available_image_keys = {k for k in dataset_features if k.startswith(f"{OBS_STR}.images.")}
+    missing_image_keys = expected_image_keys - available_image_keys
+    if missing_image_keys:
+        raise ValueError(
+            "Missing image features required by policy. "
+            f"missing={sorted(missing_image_keys)}, available={sorted(available_image_keys)}"
+        )
 
     dataset = LeRobotDataset.create(
         repo_id=args.hf_dataset_id,
