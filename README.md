@@ -113,6 +113,44 @@ python examples/alohamini_scorpion/record_bi.py \
 --dataset user/my_dataset_name 
 ```
 
+#### Replay
+host side
+```
+python -m lerobot.robots.alohamini_scorpion.lekiwi_host
+```
+
+client side
+```
+python examples/alohamini_scorpion/replay_bi.py \
+--remote_ip ip_address_of_host \
+--dataset user/my_dataset_name
+```
+
+#### VLA training
+```
+lerobot-train \
+  --dataset.repo_id=k1000dai/alohascorpion_pick_plate_put_box \
+  --policy.type=act \
+  --output_dir=outputs/train/alohascorpion_pick_plate_put_box\
+  --job_name=alohascorpion_act \
+  --policy.device=cuda \
+  --wandb.enable=true \
+  --policy.repo_id=k1000dai/alohascorpion_act
+```
+
+#### Evaluation model
+```
+python examples/alohamini/evaluate_bi.py \
+  --num_episodes 3 \
+  --fps 20 \
+  --episode_time 45 \
+  --task_description "Pick and place task" \
+  --hf_model_id liyitenga/act_policy \
+  --hf_dataset_id liyitenga/eval_dataset \
+  --remote_ip 127.0.0.1 \
+  --robot_id my_alohamini \
+  --hf_model_id ./outputs/train/act_your_dataset1/checkpoints/020000/pretrained_model
+```
 ## License
 This project is licensed under the Apache 2.0 License - see the [LICENSE](LICENSE) file for details.
 
