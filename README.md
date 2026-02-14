@@ -19,9 +19,10 @@ This project is heavily inspired by the
 2/14 : Updated to the version 2.0. Better BOM, better chassis design, better arm position, pincopen gripper.
 
 ## To Do
-[ ] Add more details to the assembly instructions.
-[ ] Support VLA training.
-[ ] Support URDF and simulators.
+
+- [ ] Add more details to the assembly instructions.
+- [ ] Support VLA training.
+- [ ] Support URDF and simulators.
 
 ## Features
 - 7 degrees of freedom per arm for enhanced manipulation capabilities. inspired by dual_scorpion
