@@ -144,11 +144,10 @@ python examples/alohamini_scorpion/evaluate_bi.py \
   --num_episodes 1 \
   --fps 10 \
   --episode_time 180  \
-  --task_description "test"  \
-  --hf_model_id k1000dai/act_alohascorpion_20k  \
-  --hf_dataset_id k1000dai/eval_dataset   \
-  --remote_ip 100.74.118.11   \
-  --robot_id my_alohamini
+  --task_description "task_description"  \
+  --hf_model_id k1000dai/act_alohascorpion  \
+  --hf_dataset_id k1000dai/evaldataset   \
+  --remote_ip ip_address_of_host
 ```
 ## License
 This project is licensed under the Apache 2.0 License - see the [LICENSE](LICENSE) file for details.
