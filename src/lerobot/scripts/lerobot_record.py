@@ -98,6 +98,7 @@ from lerobot.processor.rename_processor import rename_stats
 from lerobot.robots import (  # noqa: F401
     Robot,
     RobotConfig,
+    alohamini_scorpion,
     bi_so_follower,
     earthrover_mini_plus,
     hope_jr,
@@ -112,6 +113,7 @@ from lerobot.teleoperators import (  # noqa: F401
     Teleoperator,
     TeleoperatorConfig,
     bi_so_leader,
+    dual_scorpion_leader,
     homunculus,
     koch_leader,
     make_teleoperator_from_config,
@@ -296,6 +298,7 @@ def record_loop(
                         | so_leader.SO101Leader
                         | koch_leader.KochLeader
                         | omx_leader.OmxLeader
+                        | dual_scorpion_leader.DualScorpionLeader
                     ),
                 )
             ),
@@ -354,10 +357,16 @@ def record_loop(
 
         elif policy is None and isinstance(teleop, list):
             arm_action = teleop_arm.get_action()
-            arm_action = {f"arm_{k}": v for k, v in arm_action.items()}
+            if arm_action and all(key.startswith("arm_") for key in arm_action):
+                arm_action = arm_action
+            else:
+                arm_action = {f"arm_{k}": v for k, v in arm_action.items()}
             keyboard_action = teleop_keyboard.get_action()
             base_action = robot._from_keyboard_to_base_action(keyboard_action)
-            act = {**arm_action, **base_action} if len(base_action) > 0 else arm_action
+            lift_action = {}
+            if hasattr(robot, "_from_keyboard_to_lift_action"):
+                lift_action = robot._from_keyboard_to_lift_action(keyboard_action)
+            act = {**arm_action, **base_action, **lift_action} if (base_action or lift_action) else arm_action
             act_processed_teleop = teleop_action_processor((act, obs))
         else:
             logging.info(

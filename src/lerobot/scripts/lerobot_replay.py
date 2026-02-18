@@ -53,6 +53,7 @@ from lerobot.processor import (
 from lerobot.robots import (  # noqa: F401
     Robot,
     RobotConfig,
+    alohamini_scorpion,
     bi_so_follower,
     earthrover_mini_plus,
     hope_jr,
