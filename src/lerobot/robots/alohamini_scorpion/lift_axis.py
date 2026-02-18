@@ -7,7 +7,7 @@ import time
 class BusLike(Protocol):
     motors: Dict[str, object]
 
-    def read(self, item: str, name: str) -> float: ...
+    def read(self, item: str, name: str, normalize: bool = True) -> float: ...
     def write(self, item: str, name: str, value: float) -> None: ...
     def sync_write(self, item: str, values: Dict[str, float]) -> None: ...
 
@@ -20,7 +20,7 @@ from lerobot.motors.feetech import OperatingMode
 class LiftAxisConfig:
     enabled: bool = True
     name: str = "lift_axis"
-    bus: str = "left"  # "left" or "right" (select which existing bus to use)
+    bus: str = "left"  # "left", "right", or "base" (select which existing bus to use)
     motor_id: int = 11
     motor_model: str = "sts3215"
 
@@ -45,16 +45,24 @@ class LiftAxisConfig:
 
 
 class LiftAxis:
-    """Z-axis controller merged into existing left/right bus (velocity mode + multi-turn counter + mm-level closed loop)"""
+    """Z-axis controller merged into existing left/right/base bus (velocity mode + multi-turn counter + mm-level closed loop)"""
 
     def __init__(
         self,
         cfg: LiftAxisConfig,
         bus_left: Optional[BusLike],
         bus_right: Optional[BusLike],
+        bus_base: Optional[BusLike] = None,
     ):
         self.cfg = cfg
-        self._bus = bus_left if cfg.bus == "left" else bus_right
+        if cfg.bus == "left":
+            self._bus = bus_left
+        elif cfg.bus == "right":
+            self._bus = bus_right
+        elif cfg.bus == "base":
+            self._bus = bus_base
+        else:
+            self._bus = bus_left
         self.enabled = bool(cfg.enabled and self._bus is not None)
         self._ticks_per_rev = 4096.0
         self._deg_per_tick = 360.0 / self._ticks_per_rev

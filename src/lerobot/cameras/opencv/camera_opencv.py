@@ -286,27 +286,18 @@ class OpenCVCamera(Camera):
             )
 
     @staticmethod
-    def find_cameras(fourcc: str | None = None) -> list[dict[str, Any]]:
+    def find_cameras() -> list[dict[str, Any]]:
         """
         Detects available OpenCV cameras connected to the system.
 
         On Linux, it scans '/dev/video*' paths. On other systems (like macOS, Windows),
         it checks indices from 0 up to `MAX_OPENCV_INDEX`.
 
-        Args:
-            fourcc: Optional FOURCC code to request before reading defaults.
-                If None, uses the camera's default format.
-
         Returns:
             List[Dict[str, Any]]: A list of dictionaries,
             where each dictionary contains 'type', 'id' (port index or path),
             and the default profile properties (width, height, fps, format).
         """
-        if fourcc is not None and (not isinstance(fourcc, str) or len(fourcc) != 4):
-            raise ValueError(
-                f"`fourcc` must be a 4-character string (e.g., 'MJPG', 'YUYV'), but '{fourcc}' is provided."
-            )
-
         found_cameras_info = []
 
         targets_to_scan: list[str | int]
@@ -319,9 +310,6 @@ class OpenCVCamera(Camera):
         for target in targets_to_scan:
             camera = cv2.VideoCapture(target)
             if camera.isOpened():
-                if fourcc is not None:
-                    fourcc_code = cv2.VideoWriter_fourcc(*fourcc)
-                    camera.set(cv2.CAP_PROP_FOURCC, fourcc_code)
                 default_width = int(camera.get(cv2.CAP_PROP_FRAME_WIDTH))
                 default_height = int(camera.get(cv2.CAP_PROP_FRAME_HEIGHT))
                 default_fps = camera.get(cv2.CAP_PROP_FPS)

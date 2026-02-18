@@ -328,11 +328,16 @@ class VoiceExecutor:
             params = parsed["__replay"] or {}
             dataset = str(params.get("dataset", "liyitenga/record_20251015131957"))
             episode = int(params.get("episode", 0))
-            import sys, subprocess, shlex
-            cmd = [sys.executable, "examples/alohamini/replay_bi.py",
-                "--dataset", dataset, "--episode", str(episode)]
+            cmd = [
+                sys.executable,
+                "examples/alohamini_scorpion/replay_bi.py",
+                "--dataset",
+                dataset,
+                "--episode",
+                str(episode),
+            ]
             print(f"[ASR] Trigger detected → Executing: {' '.join(shlex.quote(c) for c in cmd)}")
-            subprocess.Popen(cmd, cwd="/home/worker/lerobot_alohamini") 
+            subprocess.Popen(cmd)
             
 
 
@@ -395,5 +400,4 @@ class VoiceExecutor:
             print({**printable_base, **printable_z})
 
         return {**base_cmd, **z_cmd}
-
 

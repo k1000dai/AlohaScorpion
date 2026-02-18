@@ -17,6 +17,27 @@ from datetime import datetime
 import argparse
 
 
+def maybe_invert_gripper_actions(
+    action: dict[str, float], invert_left_gripper: bool, invert_right_gripper: bool
+) -> dict[str, float]:
+    if invert_left_gripper and "arm_left_gripper.pos" in action:
+        action["arm_left_gripper.pos"] = 100.0 - float(action["arm_left_gripper.pos"])
+    if invert_right_gripper and "arm_right_gripper.pos" in action:
+        action["arm_right_gripper.pos"] = 100.0 - float(action["arm_right_gripper.pos"])
+    return action
+
+
+class InvertibleDualScorpionLeader(DualScorpionLeader):
+    def __init__(self, config: DualScorpionLeaderConfig, invert_left_gripper: bool, invert_right_gripper: bool):
+        super().__init__(config)
+        self.invert_left_gripper = invert_left_gripper
+        self.invert_right_gripper = invert_right_gripper
+
+    def get_action(self) -> dict[str, float]:
+        action = super().get_action()
+        return maybe_invert_gripper_actions(action, self.invert_left_gripper, self.invert_right_gripper)
+
+
 def main():
     parser = argparse.ArgumentParser(description="Record episodes with bi-arm teleoperation")
     parser.add_argument(
@@ -34,6 +55,16 @@ def main():
     parser.add_argument("--remote_ip", type=str, default="127.0.0.1", help="Robot host IP")
     parser.add_argument("--robot_id", type=str, default="lekiwi_host", help="Robot ID")
     parser.add_argument("--leader_id", type=str, default="so101_leader_bi", help="Leader arm device ID")
+    parser.add_argument(
+        "--invert_left_gripper",
+        action="store_true",
+        help="Invert left gripper action before sending (0-100 -> 100-0).",
+    )
+    parser.add_argument(
+        "--invert_right_gripper",
+        action="store_true",
+        help="Invert right gripper action before sending (0-100 -> 100-0).",
+    )
 
     args = parser.parse_args()
 
@@ -44,7 +75,16 @@ def main():
         right_arm_port="/dev/right_arm",
         left_arm_port="/dev/left_arm",
     )
-    leader_arm = DualScorpionLeader(dual_scorpion_config)
+    leader_arm = InvertibleDualScorpionLeader(
+        dual_scorpion_config,
+        invert_left_gripper=args.invert_left_gripper,
+        invert_right_gripper=args.invert_right_gripper,
+    )
+
+    if args.invert_left_gripper:
+        print("Left gripper inversion enabled.")
+    if args.invert_right_gripper:
+        print("Right gripper inversion enabled.")
 
     keyboard_config = KeyboardTeleopConfig()
 

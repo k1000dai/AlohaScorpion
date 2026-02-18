@@ -44,7 +44,6 @@ from lerobot.cameras.realsense.camera_realsense import RealSenseCamera
 from lerobot.cameras.realsense.configuration_realsense import RealSenseCameraConfig
 
 logger = logging.getLogger(__name__)
-DEFAULT_OPENCV_FOURCC = "MJPG"
 
 
 def find_all_opencv_cameras() -> list[dict[str, Any]]:
@@ -57,7 +56,7 @@ def find_all_opencv_cameras() -> list[dict[str, Any]]:
     all_opencv_cameras_info: list[dict[str, Any]] = []
     logger.info("Searching for OpenCV cameras...")
     try:
-        opencv_cameras = OpenCVCamera.find_cameras(fourcc=DEFAULT_OPENCV_FOURCC)
+        opencv_cameras = OpenCVCamera.find_cameras()
         for cam_info in opencv_cameras:
             all_opencv_cameras_info.append(cam_info)
         logger.info(f"Found {len(opencv_cameras)} OpenCV cameras.")
@@ -167,7 +166,6 @@ def create_camera_instance(cam_meta: dict[str, Any]) -> dict[str, Any] | None:
             cv_config = OpenCVCameraConfig(
                 index_or_path=cam_id,
                 color_mode=ColorMode.RGB,
-                fourcc=DEFAULT_OPENCV_FOURCC,
             )
             instance = OpenCVCamera(cv_config)
         elif cam_type == "RealSense":

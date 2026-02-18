@@ -4,9 +4,10 @@
 import argparse
 import time
 
-from lerobot.robots.alohamini import LeKiwiClient, LeKiwiClientConfig
+from lerobot.robots.alohamini_scorpion import LeKiwiClient, LeKiwiClientConfig
+from lerobot.teleoperators.bi_so_leader import BiSOLeader, BiSOLeaderConfig
 from lerobot.teleoperators.keyboard.teleop_keyboard import KeyboardTeleop, KeyboardTeleopConfig
-from lerobot.teleoperators.bi_so100_leader import BiSO100Leader, BiSO100LeaderConfig
+from lerobot.teleoperators.so_leader import SOLeaderConfig
 from lerobot.utils.robot_utils import precise_sleep
 from lerobot.utils.visualization_utils import init_rerun, log_rerun_data
 
@@ -24,17 +25,17 @@ NO_LEADER = args.no_leader
 FPS = args.fps
 
 if NO_LEADER:
-    print("🧪 NO_LEADER mode: no robot connection, printing actions only.")
+    print("NO_LEADER mode: no robot connection, printing actions only.")
 
 # Create configs
 robot_config = LeKiwiClientConfig(remote_ip=args.remote_ip, id="my_alohamini")
-bi_cfg = BiSO100LeaderConfig(
-    left_arm_port="/dev/am_arm_leader_left",
-    right_arm_port="/dev/am_arm_leader_right",
+bi_cfg = BiSOLeaderConfig(
+    left_arm_config=SOLeaderConfig(port="/dev/am_arm_leader_left"),
+    right_arm_config=SOLeaderConfig(port="/dev/am_arm_leader_right"),
     id="so101_leader_bi3",
 )
 
-leader = BiSO100Leader(bi_cfg)
+leader = BiSOLeader(bi_cfg)
 keyboard = KeyboardTeleop(KeyboardTeleopConfig(id="my_laptop_keyboard"))
 robot = LeKiwiClient(robot_config)
 
@@ -61,14 +62,14 @@ execu = VoiceExecutor(ExecConfig(xy_speed_cmd=0.20, theta_speed_cmd=500.0, emit_
 if not NO_LEADER:
     robot.connect()
 else:
-    print("🧪 robot.connect() skipped.")
+    print("robot.connect() skipped.")
 
 leader.connect()
 keyboard.connect()
 init_rerun(session_name="lekiwi_teleop")
 
 if not robot.is_connected or not leader.is_connected or not keyboard.is_connected:
-    print("⚠️ Warning: Some devices are not connected! Still running for debug.")
+    print("Warning: Some devices are not connected! Still running for debug.")
 
 # start speech
 speech.start()
