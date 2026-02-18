@@ -19,6 +19,10 @@ import logging
 import shutil
 from pathlib import Path
 
+<<<<<<< HEAD
+=======
+import datasets
+>>>>>>> sync/lerobot-v0.4.3
 import pandas as pd
 import tqdm
 
@@ -32,6 +36,10 @@ from lerobot.datasets.utils import (
     DEFAULT_VIDEO_FILE_SIZE_IN_MB,
     DEFAULT_VIDEO_PATH,
     get_file_size_in_mb,
+<<<<<<< HEAD
+=======
+    get_hf_features_from_features,
+>>>>>>> sync/lerobot-v0.4.3
     get_parquet_file_size_in_mb,
     to_parquet_with_hf_images,
     update_chunk_file_indices,
@@ -402,12 +410,28 @@ def aggregate_data(src_meta, dst_meta, data_idx, data_files_size_in_mb, chunk_si
     }
 
     unique_chunk_file_ids = sorted(unique_chunk_file_ids)
+<<<<<<< HEAD
+=======
+    contains_images = len(dst_meta.image_keys) > 0
+
+    # retrieve features schema for proper image typing in parquet
+    hf_features = get_hf_features_from_features(dst_meta.features) if contains_images else None
+>>>>>>> sync/lerobot-v0.4.3
 
     for src_chunk_idx, src_file_idx in unique_chunk_file_ids:
         src_path = src_meta.root / DEFAULT_DATA_PATH.format(
             chunk_index=src_chunk_idx, file_index=src_file_idx
         )
+<<<<<<< HEAD
         df = pd.read_parquet(src_path)
+=======
+        if contains_images:
+            # Use HuggingFace datasets to read source data to preserve image format
+            src_ds = datasets.Dataset.from_parquet(str(src_path))
+            df = src_ds.to_pandas()
+        else:
+            df = pd.read_parquet(src_path)
+>>>>>>> sync/lerobot-v0.4.3
         df = update_data_df(df, src_meta, dst_meta)
 
         data_idx = append_or_create_parquet_file(
@@ -417,8 +441,14 @@ def aggregate_data(src_meta, dst_meta, data_idx, data_files_size_in_mb, chunk_si
             data_files_size_in_mb,
             chunk_size,
             DEFAULT_DATA_PATH,
+<<<<<<< HEAD
             contains_images=len(dst_meta.image_keys) > 0,
             aggr_root=dst_meta.root,
+=======
+            contains_images=contains_images,
+            aggr_root=dst_meta.root,
+            hf_features=hf_features,
+>>>>>>> sync/lerobot-v0.4.3
         )
 
     return data_idx
@@ -488,6 +518,10 @@ def append_or_create_parquet_file(
     default_path: str,
     contains_images: bool = False,
     aggr_root: Path = None,
+<<<<<<< HEAD
+=======
+    hf_features: datasets.Features | None = None,
+>>>>>>> sync/lerobot-v0.4.3
 ):
     """Appends data to an existing parquet file or creates a new one based on size constraints.
 
@@ -503,6 +537,10 @@ def append_or_create_parquet_file(
         default_path: Format string for generating file paths.
         contains_images: Whether the data contains images requiring special handling.
         aggr_root: Root path for the aggregated dataset.
+<<<<<<< HEAD
+=======
+        hf_features: Optional HuggingFace Features schema for proper image typing.
+>>>>>>> sync/lerobot-v0.4.3
 
     Returns:
         dict: Updated index dictionary with current chunk and file indices.
@@ -512,7 +550,11 @@ def append_or_create_parquet_file(
     if not dst_path.exists():
         dst_path.parent.mkdir(parents=True, exist_ok=True)
         if contains_images:
+<<<<<<< HEAD
             to_parquet_with_hf_images(df, dst_path)
+=======
+            to_parquet_with_hf_images(df, dst_path, features=hf_features)
+>>>>>>> sync/lerobot-v0.4.3
         else:
             df.to_parquet(dst_path)
         return idx
@@ -527,12 +569,25 @@ def append_or_create_parquet_file(
         final_df = df
         target_path = new_path
     else:
+<<<<<<< HEAD
         existing_df = pd.read_parquet(dst_path)
+=======
+        if contains_images:
+            # Use HuggingFace datasets to read existing data to preserve image format
+            existing_ds = datasets.Dataset.from_parquet(str(dst_path))
+            existing_df = existing_ds.to_pandas()
+        else:
+            existing_df = pd.read_parquet(dst_path)
+>>>>>>> sync/lerobot-v0.4.3
         final_df = pd.concat([existing_df, df], ignore_index=True)
         target_path = dst_path
 
     if contains_images:
+<<<<<<< HEAD
         to_parquet_with_hf_images(final_df, target_path)
+=======
+        to_parquet_with_hf_images(final_df, target_path, features=hf_features)
+>>>>>>> sync/lerobot-v0.4.3
     else:
         final_df.to_parquet(target_path)
 

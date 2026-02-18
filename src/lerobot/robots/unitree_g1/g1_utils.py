@@ -79,6 +79,7 @@ class G1_29_JointIndex(IntEnum):
     kRightWristRoll = 26
     kRightWristPitch = 27
     kRightWristYaw = 28
+<<<<<<< HEAD
 
     # not used
     kNotUsedJoint0 = 29
@@ -87,3 +88,5 @@ class G1_29_JointIndex(IntEnum):
     kNotUsedJoint3 = 32
     kNotUsedJoint4 = 33
     kNotUsedJoint5 = 34
+=======
+>>>>>>> sync/lerobot-v0.4.3

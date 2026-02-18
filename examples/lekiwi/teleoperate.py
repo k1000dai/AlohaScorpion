@@ -18,7 +18,11 @@ import time
 
 from lerobot.robots.lekiwi import LeKiwiClient, LeKiwiClientConfig
 from lerobot.teleoperators.keyboard.teleop_keyboard import KeyboardTeleop, KeyboardTeleopConfig
+<<<<<<< HEAD
 from lerobot.teleoperators.so100_leader import SO100Leader, SO100LeaderConfig
+=======
+from lerobot.teleoperators.so_leader import SO100Leader, SO100LeaderConfig
+>>>>>>> sync/lerobot-v0.4.3
 from lerobot.utils.robot_utils import precise_sleep
 from lerobot.utils.visualization_utils import init_rerun, log_rerun_data
 

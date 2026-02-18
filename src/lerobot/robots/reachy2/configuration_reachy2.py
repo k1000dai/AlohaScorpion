@@ -30,6 +30,11 @@ class Reachy2RobotConfig(RobotConfig):
 
     # IP address of the Reachy 2 robot
     ip_address: str | None = "localhost"
+<<<<<<< HEAD
+=======
+    # Port of the Reachy 2 robot
+    port: int = 50065
+>>>>>>> sync/lerobot-v0.4.3
 
     # If True, turn_off_smoothly() will be sent to the robot before disconnecting.
     disable_torque_on_disconnect: bool = False
@@ -51,11 +56,24 @@ class Reachy2RobotConfig(RobotConfig):
 
     # Robot cameras
     # Set to True if you want to use the corresponding cameras in the observations.
+<<<<<<< HEAD
     # By default, only the teleop cameras are used.
     with_left_teleop_camera: bool = True
     with_right_teleop_camera: bool = True
     with_torso_camera: bool = False
 
+=======
+    # By default, no camera is used.
+    with_left_teleop_camera: bool = False
+    with_right_teleop_camera: bool = False
+    with_torso_camera: bool = False
+
+    # Camera parameters
+    camera_width: int = 640
+    camera_height: int = 480
+
+    # For cameras other than the 3 default Reachy 2 cameras.
+>>>>>>> sync/lerobot-v0.4.3
     cameras: dict[str, CameraConfig] = field(default_factory=dict)
 
     def __post_init__(self) -> None:
@@ -65,9 +83,16 @@ class Reachy2RobotConfig(RobotConfig):
                 name="teleop",
                 image_type="left",
                 ip_address=self.ip_address,
+<<<<<<< HEAD
                 fps=15,
                 width=640,
                 height=480,
+=======
+                port=self.port,
+                width=self.camera_width,
+                height=self.camera_height,
+                fps=30,  # Not configurable for Reachy 2 cameras
+>>>>>>> sync/lerobot-v0.4.3
                 color_mode=ColorMode.RGB,
             )
         if self.with_right_teleop_camera:
@@ -75,9 +100,16 @@ class Reachy2RobotConfig(RobotConfig):
                 name="teleop",
                 image_type="right",
                 ip_address=self.ip_address,
+<<<<<<< HEAD
                 fps=15,
                 width=640,
                 height=480,
+=======
+                port=self.port,
+                width=self.camera_width,
+                height=self.camera_height,
+                fps=30,  # Not configurable for Reachy 2 cameras
+>>>>>>> sync/lerobot-v0.4.3
                 color_mode=ColorMode.RGB,
             )
         if self.with_torso_camera:
@@ -85,9 +117,16 @@ class Reachy2RobotConfig(RobotConfig):
                 name="depth",
                 image_type="rgb",
                 ip_address=self.ip_address,
+<<<<<<< HEAD
                 fps=15,
                 width=640,
                 height=480,
+=======
+                port=self.port,
+                width=self.camera_width,
+                height=self.camera_height,
+                fps=30,  # Not configurable for Reachy 2 cameras
+>>>>>>> sync/lerobot-v0.4.3
                 color_mode=ColorMode.RGB,
             )
 

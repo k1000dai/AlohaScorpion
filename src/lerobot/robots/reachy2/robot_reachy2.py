@@ -13,6 +13,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+<<<<<<< HEAD
 
 import time
 from typing import Any
@@ -21,11 +22,29 @@ import numpy as np
 from reachy2_sdk import ReachySDK
 
 from lerobot.cameras.utils import make_cameras_from_configs
+=======
+from __future__ import annotations
+
+import time
+from typing import TYPE_CHECKING, Any
+
+from lerobot.cameras.utils import make_cameras_from_configs
+from lerobot.processor import RobotAction, RobotObservation
+from lerobot.utils.import_utils import _reachy2_sdk_available
+>>>>>>> sync/lerobot-v0.4.3
 
 from ..robot import Robot
 from ..utils import ensure_safe_goal_position
 from .configuration_reachy2 import Reachy2RobotConfig
 
+<<<<<<< HEAD
+=======
+if TYPE_CHECKING or _reachy2_sdk_available:
+    from reachy2_sdk import ReachySDK
+else:
+    ReachySDK = None
+
+>>>>>>> sync/lerobot-v0.4.3
 # {lerobot_keys: reachy2_sdk_keys}
 REACHY2_NECK_JOINTS = {
     "neck_yaw.pos": "head.neck.yaw",
@@ -165,8 +184,13 @@ class Reachy2Robot(Robot):
         else:
             return {}
 
+<<<<<<< HEAD
     def get_observation(self) -> dict[str, np.ndarray]:
         obs_dict: dict[str, Any] = {}
+=======
+    def get_observation(self) -> RobotObservation:
+        obs_dict: RobotObservation = {}
+>>>>>>> sync/lerobot-v0.4.3
 
         # Read Reachy 2 state
         before_read_t = time.perf_counter()
@@ -179,7 +203,11 @@ class Reachy2Robot(Robot):
 
         return obs_dict
 
+<<<<<<< HEAD
     def send_action(self, action: dict[str, Any]) -> dict[str, Any]:
+=======
+    def send_action(self, action: RobotAction) -> RobotAction:
+>>>>>>> sync/lerobot-v0.4.3
         if self.reachy is not None:
             if not self.is_connected:
                 raise ConnectionError()

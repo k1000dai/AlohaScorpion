@@ -33,6 +33,7 @@ Example teleoperation with bimanual so100:
 
 ```shell
 lerobot-teleoperate \
+<<<<<<< HEAD
   --robot.type=bi_so100_follower \
   --robot.left_arm_port=/dev/tty.usbmodem5A460851411 \
   --robot.right_arm_port=/dev/tty.usbmodem5A460812391 \
@@ -45,6 +46,20 @@ lerobot-teleoperate \
   --teleop.type=bi_so100_leader \
   --teleop.left_arm_port=/dev/tty.usbmodem5A460828611 \
   --teleop.right_arm_port=/dev/tty.usbmodem5A460826981 \
+=======
+  --robot.type=bi_so_follower \
+  --robot.left_arm_config.port=/dev/tty.usbmodem5A460822851 \
+  --robot.right_arm_config.port=/dev/tty.usbmodem5A460814411 \
+  --robot.id=bimanual_follower \
+  --robot.left_arm_config.cameras='{
+    wrist: {"type": "opencv", "index_or_path": 1, "width": 640, "height": 480, "fps": 30},
+  }' --robot.right_arm_config.cameras='{
+    wrist: {"type": "opencv", "index_or_path": 2, "width": 640, "height": 480, "fps": 30},
+  }' \
+  --teleop.type=bi_so_leader \
+  --teleop.left_arm_config.port=/dev/tty.usbmodem5A460852721 \
+  --teleop.right_arm_config.port=/dev/tty.usbmodem5A460819811 \
+>>>>>>> sync/lerobot-v0.4.3
   --teleop.id=bimanual_leader \
   --display_data=true
 ```
@@ -70,27 +85,47 @@ from lerobot.processor import (
 from lerobot.robots import (  # noqa: F401
     Robot,
     RobotConfig,
+<<<<<<< HEAD
     bi_so100_follower,
+=======
+    alohamini_scorpion,
+    bi_so_follower,
+>>>>>>> sync/lerobot-v0.4.3
     earthrover_mini_plus,
     hope_jr,
     koch_follower,
     make_robot_from_config,
     omx_follower,
+<<<<<<< HEAD
     so100_follower,
     so101_follower,
+=======
+    reachy2,
+    so_follower,
+>>>>>>> sync/lerobot-v0.4.3
 )
 from lerobot.teleoperators import (  # noqa: F401
     Teleoperator,
     TeleoperatorConfig,
+<<<<<<< HEAD
     bi_so100_leader,
+=======
+    bi_so_leader,
+    dual_scorpion_leader,
+>>>>>>> sync/lerobot-v0.4.3
     gamepad,
     homunculus,
     keyboard,
     koch_leader,
     make_teleoperator_from_config,
     omx_leader,
+<<<<<<< HEAD
     so100_leader,
     so101_leader,
+=======
+    reachy2_teleoperator,
+    so_leader,
+>>>>>>> sync/lerobot-v0.4.3
 )
 from lerobot.utils.import_utils import register_third_party_plugins
 from lerobot.utils.robot_utils import precise_sleep
@@ -108,6 +143,15 @@ class TeleoperateConfig:
     teleop_time_s: float | None = None
     # Display all cameras on screen
     display_data: bool = False
+<<<<<<< HEAD
+=======
+    # Display data on a remote Rerun server
+    display_ip: str | None = None
+    # Port of the remote Rerun server
+    display_port: int | None = None
+    # Whether to  display compressed images in Rerun
+    display_compressed_images: bool = False
+>>>>>>> sync/lerobot-v0.4.3
 
 
 def teleop_loop(
@@ -119,6 +163,10 @@ def teleop_loop(
     robot_observation_processor: RobotProcessorPipeline[RobotObservation, RobotObservation],
     display_data: bool = False,
     duration: float | None = None,
+<<<<<<< HEAD
+=======
+    display_compressed_images: bool = False,
+>>>>>>> sync/lerobot-v0.4.3
 ):
     """
     This function continuously reads actions from a teleoperation device, processes them through optional
@@ -130,6 +178,10 @@ def teleop_loop(
         robot: The robot instance being controlled.
         fps: The target frequency for the control loop in frames per second.
         display_data: If True, fetches robot observations and displays them in the console and Rerun.
+<<<<<<< HEAD
+=======
+        display_compressed_images: If True, compresses images before sending them to Rerun for display.
+>>>>>>> sync/lerobot-v0.4.3
         duration: The maximum duration of the teleoperation loop in seconds. If None, the loop runs indefinitely.
         teleop_action_processor: An optional pipeline to process raw actions from the teleoperator.
         robot_action_processor: An optional pipeline to process actions before they are sent to the robot.
@@ -157,7 +209,11 @@ def teleop_loop(
         # Process action for robot through pipeline
         robot_action_to_send = robot_action_processor((teleop_action, obs))
 
+<<<<<<< HEAD
         # Send processed action to robot (robot_action_processor.to_output should return dict[str, Any])
+=======
+        # Send processed action to robot (robot_action_processor.to_output should return RobotAction)
+>>>>>>> sync/lerobot-v0.4.3
         _ = robot.send_action(robot_action_to_send)
 
         if display_data:
@@ -167,6 +223,10 @@ def teleop_loop(
             log_rerun_data(
                 observation=obs_transition,
                 action=teleop_action,
+<<<<<<< HEAD
+=======
+                compress_images=display_compressed_images,
+>>>>>>> sync/lerobot-v0.4.3
             )
 
             print("\n" + "-" * (display_len + 10))
@@ -177,7 +237,11 @@ def teleop_loop(
             move_cursor_up(len(robot_action_to_send) + 3)
 
         dt_s = time.perf_counter() - loop_start
+<<<<<<< HEAD
         precise_sleep(1 / fps - dt_s)
+=======
+        precise_sleep(max(1 / fps - dt_s, 0.0))
+>>>>>>> sync/lerobot-v0.4.3
         loop_s = time.perf_counter() - loop_start
         print(f"Teleop loop time: {loop_s * 1e3:.2f}ms ({1 / loop_s:.0f} Hz)")
         move_cursor_up(1)
@@ -191,7 +255,16 @@ def teleoperate(cfg: TeleoperateConfig):
     init_logging()
     logging.info(pformat(asdict(cfg)))
     if cfg.display_data:
+<<<<<<< HEAD
         init_rerun(session_name="teleoperation")
+=======
+        init_rerun(session_name="teleoperation", ip=cfg.display_ip, port=cfg.display_port)
+    display_compressed_images = (
+        True
+        if (cfg.display_data and cfg.display_ip is not None and cfg.display_port is not None)
+        else cfg.display_compressed_images
+    )
+>>>>>>> sync/lerobot-v0.4.3
 
     teleop = make_teleoperator_from_config(cfg.teleop)
     robot = make_robot_from_config(cfg.robot)
@@ -210,6 +283,10 @@ def teleoperate(cfg: TeleoperateConfig):
             teleop_action_processor=teleop_action_processor,
             robot_action_processor=robot_action_processor,
             robot_observation_processor=robot_observation_processor,
+<<<<<<< HEAD
+=======
+            display_compressed_images=display_compressed_images,
+>>>>>>> sync/lerobot-v0.4.3
         )
     except KeyboardInterrupt:
         pass

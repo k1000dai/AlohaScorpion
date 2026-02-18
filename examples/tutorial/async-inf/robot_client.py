@@ -4,7 +4,11 @@ from lerobot.async_inference.configs import RobotClientConfig
 from lerobot.async_inference.helpers import visualize_action_queue_size
 from lerobot.async_inference.robot_client import RobotClient
 from lerobot.cameras.opencv.configuration_opencv import OpenCVCameraConfig
+<<<<<<< HEAD
 from lerobot.robots.so100_follower import SO100FollowerConfig
+=======
+from lerobot.robots.so_follower import SO100FollowerConfig
+>>>>>>> sync/lerobot-v0.4.3
 
 
 def main():
@@ -30,6 +34,10 @@ def main():
         robot=robot_cfg,
         server_address=server_address,
         policy_device="mps",
+<<<<<<< HEAD
+=======
+        client_device="cpu",
+>>>>>>> sync/lerobot-v0.4.3
         policy_type="act",
         pretrained_name_or_path="<user>/robot_learning_tutorial_act",
         chunk_size_threshold=0.5,  # g

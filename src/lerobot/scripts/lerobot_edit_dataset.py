@@ -66,6 +66,7 @@ Remove camera feature:
         --operation.type remove_feature \
         --operation.feature_names "['observation.images.top']"
 
+<<<<<<< HEAD
 Convert image dataset to video format (saves locally):
     python -m lerobot.scripts.lerobot_edit_dataset \
         --repo_id lerobot/pusht_image \
@@ -83,6 +84,25 @@ Convert and push to hub:
         --repo_id lerobot/pusht_image \
         --new_repo_id lerobot/pusht_video \
         --operation.type convert_to_video \
+=======
+Convert image dataset to video format and save locally:
+    python -m lerobot.scripts.lerobot_edit_dataset \
+        --repo_id lerobot/pusht_image \
+        --operation.type convert_image_to_video \
+        --operation.output_dir /path/to/output/pusht_video
+
+Convert image dataset to video format and save with new repo_id:
+    python -m lerobot.scripts.lerobot_edit_dataset \
+        --repo_id lerobot/pusht_image \
+        --new_repo_id lerobot/pusht_video \
+        --operation.type convert_image_to_video
+
+Convert image dataset to video format and push to hub:
+    python -m lerobot.scripts.lerobot_edit_dataset \
+        --repo_id lerobot/pusht_image \
+        --new_repo_id lerobot/pusht_video \
+        --operation.type convert_image_to_video \
+>>>>>>> sync/lerobot-v0.4.3
         --push_to_hub true
 
 Using JSON config file:
@@ -92,6 +112,7 @@ Using JSON config file:
 
 import logging
 import shutil
+<<<<<<< HEAD
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass
 from pathlib import Path
@@ -101,15 +122,28 @@ from tqdm import tqdm
 
 from lerobot.configs import parser
 from lerobot.datasets.dataset_tools import (
+=======
+from dataclasses import dataclass
+from pathlib import Path
+
+from lerobot.configs import parser
+from lerobot.datasets.dataset_tools import (
+    convert_image_to_video_dataset,
+>>>>>>> sync/lerobot-v0.4.3
     delete_episodes,
     merge_datasets,
     remove_feature,
     split_dataset,
 )
+<<<<<<< HEAD
 from lerobot.datasets.lerobot_dataset import LeRobotDataset, LeRobotDatasetMetadata
 from lerobot.datasets.utils import write_stats, write_tasks
 from lerobot.datasets.video_utils import encode_video_frames, get_video_info
 from lerobot.utils.constants import HF_LEROBOT_HOME, OBS_IMAGE
+=======
+from lerobot.datasets.lerobot_dataset import LeRobotDataset
+from lerobot.utils.constants import HF_LEROBOT_HOME
+>>>>>>> sync/lerobot-v0.4.3
 from lerobot.utils.utils import init_logging
 
 
@@ -138,8 +172,13 @@ class RemoveFeatureConfig:
 
 
 @dataclass
+<<<<<<< HEAD
 class ConvertToVideoConfig:
     type: str = "convert_to_video"
+=======
+class ConvertImageToVideoConfig:
+    type: str = "convert_image_to_video"
+>>>>>>> sync/lerobot-v0.4.3
     output_dir: str | None = None
     vcodec: str = "libsvtav1"
     pix_fmt: str = "yuv420p"
@@ -148,12 +187,23 @@ class ConvertToVideoConfig:
     fast_decode: int = 0
     episode_indices: list[int] | None = None
     num_workers: int = 4
+<<<<<<< HEAD
+=======
+    max_episodes_per_batch: int | None = None
+    max_frames_per_batch: int | None = None
+>>>>>>> sync/lerobot-v0.4.3
 
 
 @dataclass
 class EditDatasetConfig:
     repo_id: str
+<<<<<<< HEAD
     operation: DeleteEpisodesConfig | SplitConfig | MergeConfig | RemoveFeatureConfig | ConvertToVideoConfig
+=======
+    operation: (
+        DeleteEpisodesConfig | SplitConfig | MergeConfig | RemoveFeatureConfig | ConvertImageToVideoConfig
+    )
+>>>>>>> sync/lerobot-v0.4.3
     root: str | None = None
     new_repo_id: str | None = None
     push_to_hub: bool = False
@@ -297,6 +347,7 @@ def handle_remove_feature(cfg: EditDatasetConfig) -> None:
         LeRobotDataset(output_repo_id, root=output_dir).push_to_hub()
 
 
+<<<<<<< HEAD
 def save_episode_images_for_video(
     dataset: LeRobotDataset,
     imgs_dir: Path,
@@ -653,6 +704,9 @@ def _copy_data_without_images(
 
 
 def handle_convert_to_video(cfg: EditDatasetConfig) -> None:
+=======
+def handle_convert_image_to_video(cfg: EditDatasetConfig) -> None:
+>>>>>>> sync/lerobot-v0.4.3
     # Note: Parser may create any config type with the right fields, so we access fields directly
     # instead of checking isinstance()
     dataset = LeRobotDataset(cfg.repo_id, root=cfg.root)
@@ -664,8 +718,17 @@ def handle_convert_to_video(cfg: EditDatasetConfig) -> None:
     if cfg.new_repo_id:
         # Use new_repo_id for both local storage and hub push
         output_repo_id = cfg.new_repo_id
+<<<<<<< HEAD
         output_dir = Path(cfg.root) / cfg.new_repo_id if cfg.root else HF_LEROBOT_HOME / cfg.new_repo_id
         logging.info(f"Saving to new dataset: {cfg.new_repo_id}")
+=======
+        # Place new dataset as a sibling to the original dataset
+        # Get the parent of the actual dataset root (not cfg.root which might be the lerobot cache dir)
+        # Extract just the dataset name (after last slash) for the local directory
+        local_dir_name = cfg.new_repo_id.split("/")[-1]
+        output_dir = dataset.root.parent / local_dir_name
+        logging.info(f"Saving to new dataset: {cfg.new_repo_id} at {output_dir}")
+>>>>>>> sync/lerobot-v0.4.3
     elif output_dir_config:
         # Use custom output directory for local-only storage
         output_dir = Path(output_dir_config)
@@ -675,12 +738,23 @@ def handle_convert_to_video(cfg: EditDatasetConfig) -> None:
     else:
         # Auto-generate name: append "_video" to original repo_id
         output_repo_id = f"{cfg.repo_id}_video"
+<<<<<<< HEAD
         output_dir = Path(cfg.root) / output_repo_id if cfg.root else HF_LEROBOT_HOME / output_repo_id
+=======
+        # Place new dataset as a sibling to the original dataset
+        # Extract just the dataset name (after last slash) for the local directory
+        local_dir_name = output_repo_id.split("/")[-1]
+        output_dir = dataset.root.parent / local_dir_name
+>>>>>>> sync/lerobot-v0.4.3
         logging.info(f"Saving to auto-generated location: {output_dir}")
 
     logging.info(f"Converting dataset {cfg.repo_id} to video format")
 
+<<<<<<< HEAD
     new_dataset = convert_dataset_to_videos(
+=======
+    new_dataset = convert_image_to_video_dataset(
+>>>>>>> sync/lerobot-v0.4.3
         dataset=dataset,
         output_dir=output_dir,
         repo_id=output_repo_id,
@@ -691,6 +765,11 @@ def handle_convert_to_video(cfg: EditDatasetConfig) -> None:
         fast_decode=getattr(cfg.operation, "fast_decode", 0),
         episode_indices=getattr(cfg.operation, "episode_indices", None),
         num_workers=getattr(cfg.operation, "num_workers", 4),
+<<<<<<< HEAD
+=======
+        max_episodes_per_batch=getattr(cfg.operation, "max_episodes_per_batch", None),
+        max_frames_per_batch=getattr(cfg.operation, "max_frames_per_batch", None),
+>>>>>>> sync/lerobot-v0.4.3
     )
 
     logging.info("Video dataset created successfully!")
@@ -718,8 +797,13 @@ def edit_dataset(cfg: EditDatasetConfig) -> None:
         handle_merge(cfg)
     elif operation_type == "remove_feature":
         handle_remove_feature(cfg)
+<<<<<<< HEAD
     elif operation_type == "convert_to_video":
         handle_convert_to_video(cfg)
+=======
+    elif operation_type == "convert_image_to_video":
+        handle_convert_image_to_video(cfg)
+>>>>>>> sync/lerobot-v0.4.3
     else:
         raise ValueError(
             f"Unknown operation type: {operation_type}\n"

@@ -29,6 +29,11 @@ from gymnasium import spaces
 from libero.libero import benchmark, get_libero_path
 from libero.libero.envs import OffScreenRenderEnv
 
+<<<<<<< HEAD
+=======
+from lerobot.processor import RobotObservation
+
+>>>>>>> sync/lerobot-v0.4.3
 
 def _parse_camera_names(camera_name: str | Sequence[str]) -> list[str]:
     """Normalize camera_name into a non-empty list of strings."""
@@ -237,7 +242,11 @@ class LiberoEnv(gym.Env):
         env.reset()
         return env
 
+<<<<<<< HEAD
     def _format_raw_obs(self, raw_obs: dict[str, Any]) -> dict[str, Any]:
+=======
+    def _format_raw_obs(self, raw_obs: RobotObservation) -> RobotObservation:
+>>>>>>> sync/lerobot-v0.4.3
         images = {}
         for camera_name in self.camera_name:
             image = raw_obs[camera_name]
@@ -291,9 +300,15 @@ class LiberoEnv(gym.Env):
     def reset(self, seed=None, **kwargs):
         super().reset(seed=seed)
         self._env.seed(seed)
+<<<<<<< HEAD
         if self.init_states and self._init_states is not None:
             self._env.set_init_state(self._init_states[self._init_state_id])
         raw_obs = self._env.reset()
+=======
+        raw_obs = self._env.reset()
+        if self.init_states and self._init_states is not None:
+            raw_obs = self._env.set_init_state(self._init_states[self._init_state_id])
+>>>>>>> sync/lerobot-v0.4.3
 
         # After reset, objects may be unstable (slightly floating, intersecting, etc.).
         # Step the simulator with a no-op action for a few frames so everything settles.
@@ -313,7 +328,11 @@ class LiberoEnv(gym.Env):
         info = {"is_success": False}
         return observation, info
 
+<<<<<<< HEAD
     def step(self, action: np.ndarray) -> tuple[dict[str, Any], float, bool, bool, dict[str, Any]]:
+=======
+    def step(self, action: np.ndarray) -> tuple[RobotObservation, float, bool, bool, dict[str, Any]]:
+>>>>>>> sync/lerobot-v0.4.3
         if action.ndim != 1:
             raise ValueError(
                 f"Expected action to be 1-D (shape (action_dim,)), "

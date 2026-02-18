@@ -14,7 +14,11 @@ You can contribute in many ways:
 - **Documentation:** Improve examples, guides, and docstrings.
 - **Feedback:** Submit tickets related to bugs or desired new features.
 
+<<<<<<< HEAD
 If you are unsure where to start, join our [Discord Channel](https://discord.gg/JkrYNdmw).
+=======
+If you are unsure where to start, join our [Discord Channel](https://discord.gg/q8Dzzpym3f).
+>>>>>>> sync/lerobot-v0.4.3
 
 ## Development Setup
 

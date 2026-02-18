@@ -337,10 +337,20 @@ class PaliGemmaWithExpertModel(
         use_adarms=None,
         precision: Literal["bfloat16", "float32"] = "bfloat16",
         image_size: int = DEFAULT_IMAGE_SIZE,
+<<<<<<< HEAD
+=======
+        freeze_vision_encoder: bool = False,
+        train_expert_only: bool = False,
+>>>>>>> sync/lerobot-v0.4.3
     ):
         if use_adarms is None:
             use_adarms = [False, False]
         super().__init__()
+<<<<<<< HEAD
+=======
+        self.freeze_vision_encoder = freeze_vision_encoder
+        self.train_expert_only = train_expert_only
+>>>>>>> sync/lerobot-v0.4.3
 
         vlm_config_hf = CONFIG_MAPPING["paligemma"]()
         vlm_config_hf._vocab_size = 257152  # noqa: SLF001
@@ -381,6 +391,10 @@ class PaliGemmaWithExpertModel(
         self.gemma_expert.model.embed_tokens = None
 
         self.to_bfloat16_for_selected_params(precision)
+<<<<<<< HEAD
+=======
+        self._set_requires_grad()
+>>>>>>> sync/lerobot-v0.4.3
 
     def to_bfloat16_for_selected_params(self, precision: Literal["bfloat16", "float32"] = "bfloat16"):
         if precision == "bfloat16":
@@ -404,6 +418,26 @@ class PaliGemmaWithExpertModel(
             if any(selector in name for selector in params_to_keep_float32):
                 param.data = param.data.to(dtype=torch.float32)
 
+<<<<<<< HEAD
+=======
+    def _set_requires_grad(self):
+        if self.freeze_vision_encoder:
+            self.paligemma.vision_tower.eval()
+            for param in self.paligemma.vision_tower.parameters():
+                param.requires_grad = False
+        if self.train_expert_only:
+            self.paligemma.eval()
+            for param in self.paligemma.parameters():
+                param.requires_grad = False
+
+    def train(self, mode: bool = True):
+        super().train(mode)
+        if self.freeze_vision_encoder:
+            self.paligemma.vision_tower.eval()
+        if self.train_expert_only:
+            self.paligemma.eval()
+
+>>>>>>> sync/lerobot-v0.4.3
     def embed_image(self, image: torch.Tensor):
         return self.paligemma.model.get_image_features(image)
 
@@ -531,6 +565,11 @@ class PI05Pytorch(nn.Module):  # see openpi `PI0Pytorch`
             use_adarms=[False, True],
             precision=config.dtype,
             image_size=config.image_resolution[0],
+<<<<<<< HEAD
+=======
+            freeze_vision_encoder=config.freeze_vision_encoder,
+            train_expert_only=config.train_expert_only,
+>>>>>>> sync/lerobot-v0.4.3
         )
 
         self.action_in_proj = nn.Linear(config.max_action_dim, action_expert_config.width)
@@ -1246,3 +1285,17 @@ class PI05Policy(PreTrainedPolicy):
             loss = losses.mean()
             loss_dict["loss"] = loss.item()
             return loss, loss_dict
+<<<<<<< HEAD
+=======
+
+    def _get_default_peft_targets(self) -> dict[str, any]:
+        """Return default PEFT target modules for PI0.5 fine-tuning."""
+        common_projections = (
+            "state_proj|action_in_proj|action_out_proj|action_time_mlp_in|action_time_mlp_out"
+        )
+        target_modules = rf"(.*\.gemma_expert\..*\.self_attn\.(q|v)_proj|model\.({common_projections}))"
+        return {
+            "target_modules": target_modules,
+            "modules_to_save": [],
+        }
+>>>>>>> sync/lerobot-v0.4.3

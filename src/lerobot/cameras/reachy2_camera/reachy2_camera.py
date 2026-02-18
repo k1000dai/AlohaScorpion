@@ -16,12 +16,21 @@
 Provides the Reachy2Camera class for capturing frames from Reachy 2 cameras using Reachy 2's CameraManager.
 """
 
+<<<<<<< HEAD
+=======
+from __future__ import annotations
+
+>>>>>>> sync/lerobot-v0.4.3
 import logging
 import os
 import platform
 import time
+<<<<<<< HEAD
 from threading import Event, Lock, Thread
 from typing import Any
+=======
+from typing import TYPE_CHECKING, Any
+>>>>>>> sync/lerobot-v0.4.3
 
 from numpy.typing import NDArray  # type: ignore  # TODO: add type stubs for numpy.typing
 
@@ -30,10 +39,26 @@ if platform.system() == "Windows" and "OPENCV_VIDEOIO_MSMF_ENABLE_HW_TRANSFORMS"
     os.environ["OPENCV_VIDEOIO_MSMF_ENABLE_HW_TRANSFORMS"] = "0"
 import cv2  # type: ignore  # TODO: add type stubs for OpenCV
 import numpy as np  # type: ignore  # TODO: add type stubs for numpy
+<<<<<<< HEAD
 from reachy2_sdk.media.camera import CameraView  # type: ignore  # TODO: add type stubs for reachy2_sdk
 from reachy2_sdk.media.camera_manager import (  # type: ignore  # TODO: add type stubs for reachy2_sdk
     CameraManager,
 )
+=======
+
+from lerobot.utils.import_utils import _reachy2_sdk_available
+
+if TYPE_CHECKING or _reachy2_sdk_available:
+    from reachy2_sdk.media.camera import CameraView
+    from reachy2_sdk.media.camera_manager import CameraManager
+else:
+    CameraManager = None
+
+    class CameraView:
+        LEFT = 0
+        RIGHT = 1
+
+>>>>>>> sync/lerobot-v0.4.3
 
 from lerobot.utils.errors import DeviceNotConnectedError
 
@@ -69,17 +94,23 @@ class Reachy2Camera(Camera):
 
         self.config = config
 
+<<<<<<< HEAD
         self.fps = config.fps
+=======
+>>>>>>> sync/lerobot-v0.4.3
         self.color_mode = config.color_mode
 
         self.cam_manager: CameraManager | None = None
 
+<<<<<<< HEAD
         self.thread: Thread | None = None
         self.stop_event: Event | None = None
         self.frame_lock: Lock = Lock()
         self.latest_frame: NDArray[Any] | None = None
         self.new_frame_event: Event = Event()
 
+=======
+>>>>>>> sync/lerobot-v0.4.3
     def __str__(self) -> str:
         return f"{self.__class__.__name__}({self.config.name}, {self.config.image_type})"
 
@@ -100,13 +131,24 @@ class Reachy2Camera(Camera):
     def connect(self, warmup: bool = True) -> None:
         """
         Connects to the Reachy2 CameraManager as specified in the configuration.
+<<<<<<< HEAD
         """
         self.cam_manager = CameraManager(host=self.config.ip_address, port=self.config.port)
+=======
+
+        Raises:
+            DeviceNotConnectedError: If the camera is not connected.
+        """
+        self.cam_manager = CameraManager(host=self.config.ip_address, port=self.config.port)
+        if self.cam_manager is None:
+            raise DeviceNotConnectedError(f"Could not connect to {self}.")
+>>>>>>> sync/lerobot-v0.4.3
         self.cam_manager.initialize_cameras()
 
         logger.info(f"{self} connected.")
 
     @staticmethod
+<<<<<<< HEAD
     def find_cameras(ip_address: str = "localhost", port: int = 50065) -> list[dict[str, Any]]:
         """
         Detects available Reachy 2 cameras.
@@ -138,6 +180,13 @@ class Reachy2Camera(Camera):
 
         camera_manager.disconnect()
         return initialized_cameras
+=======
+    def find_cameras() -> list[dict[str, Any]]:
+        """
+        Detection not implemented for Reachy2 cameras.
+        """
+        raise NotImplementedError("Camera detection is not implemented for Reachy2 cameras.")
+>>>>>>> sync/lerobot-v0.4.3
 
     def read(self, color_mode: ColorMode | None = None) -> NDArray[Any]:
         """
@@ -155,6 +204,7 @@ class Reachy2Camera(Camera):
                        (height, width, channels), using the specified or default
                        color mode and applying any configured rotation.
         """
+<<<<<<< HEAD
         if not self.is_connected:
             raise DeviceNotConnectedError(f"{self} is not connected.")
 
@@ -181,12 +231,47 @@ class Reachy2Camera(Camera):
 
             if self.config.color_mode == "rgb":
                 frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+=======
+        start_time = time.perf_counter()
+
+        if not self.is_connected:
+            raise DeviceNotConnectedError(f"{self} is not connected.")
+
+        if self.cam_manager is None:
+            raise DeviceNotConnectedError(f"{self} is not connected.")
+
+        frame: NDArray[Any] = np.empty((0, 0, 3), dtype=np.uint8)
+
+        if self.config.name == "teleop" and hasattr(self.cam_manager, "teleop"):
+            if self.config.image_type == "left":
+                frame = self.cam_manager.teleop.get_frame(
+                    CameraView.LEFT, size=(self.config.width, self.config.height)
+                )[0]
+            elif self.config.image_type == "right":
+                frame = self.cam_manager.teleop.get_frame(
+                    CameraView.RIGHT, size=(self.config.width, self.config.height)
+                )[0]
+        elif self.config.name == "depth" and hasattr(self.cam_manager, "depth"):
+            if self.config.image_type == "depth":
+                frame = self.cam_manager.depth.get_depth_frame()[0]
+            elif self.config.image_type == "rgb":
+                frame = self.cam_manager.depth.get_frame(size=(self.config.width, self.config.height))[0]
+        else:
+            raise ValueError(f"Invalid camera name '{self.config.name}'. Expected 'teleop' or 'depth'.")
+
+        if frame is None:
+            return np.empty((0, 0, 3), dtype=np.uint8)
+
+        if self.config.color_mode == "rgb":
+            frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+>>>>>>> sync/lerobot-v0.4.3
 
         read_duration_ms = (time.perf_counter() - start_time) * 1e3
         logger.debug(f"{self} read took: {read_duration_ms:.1f}ms")
 
         return frame
 
+<<<<<<< HEAD
     def _read_loop(self) -> None:
         """
         Internal loop run by the background thread for asynchronous reading.
@@ -244,6 +329,13 @@ class Reachy2Camera(Camera):
         This method retrieves the most recent frame captured by the background
         read thread. It does not block waiting for the camera hardware directly,
         but may wait up to timeout_ms for the background thread to provide a frame.
+=======
+    def async_read(self, timeout_ms: float = 200) -> NDArray[Any]:
+        """
+        Reads the latest available frame.
+
+        This method retrieves the most recent frame available in Reachy 2's low-level software.
+>>>>>>> sync/lerobot-v0.4.3
 
         Args:
             timeout_ms (float): Maximum time in milliseconds to wait for a frame
@@ -261,6 +353,7 @@ class Reachy2Camera(Camera):
         if not self.is_connected:
             raise DeviceNotConnectedError(f"{self} is not connected.")
 
+<<<<<<< HEAD
         if self.thread is None or not self.thread.is_alive():
             self._start_read_thread()
 
@@ -277,6 +370,12 @@ class Reachy2Camera(Camera):
 
         if frame is None:
             raise RuntimeError(f"Internal error: Event set but no frame available for {self}.")
+=======
+        frame = self.read()
+
+        if frame is None:
+            raise RuntimeError(f"Internal error: No frame available for {self}.")
+>>>>>>> sync/lerobot-v0.4.3
 
         return frame
 
@@ -287,12 +386,18 @@ class Reachy2Camera(Camera):
         Raises:
             DeviceNotConnectedError: If the camera is already disconnected.
         """
+<<<<<<< HEAD
         if not self.is_connected and self.thread is None:
             raise DeviceNotConnectedError(f"{self} not connected.")
 
         if self.thread is not None:
             self._stop_read_thread()
 
+=======
+        if not self.is_connected:
+            raise DeviceNotConnectedError(f"{self} not connected.")
+
+>>>>>>> sync/lerobot-v0.4.3
         if self.cam_manager is not None:
             self.cam_manager.disconnect()
 

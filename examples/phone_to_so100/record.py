@@ -26,15 +26,23 @@ from lerobot.processor.converters import (
     transition_to_observation,
     transition_to_robot_action,
 )
+<<<<<<< HEAD
 from lerobot.robots.so100_follower.config_so100_follower import SO100FollowerConfig
 from lerobot.robots.so100_follower.robot_kinematic_processor import (
+=======
+from lerobot.robots.so_follower import SO100Follower, SO100FollowerConfig
+from lerobot.robots.so_follower.robot_kinematic_processor import (
+>>>>>>> sync/lerobot-v0.4.3
     EEBoundsAndSafety,
     EEReferenceAndDelta,
     ForwardKinematicsJointsToEE,
     GripperVelocityToJoint,
     InverseKinematicsEEToJoints,
 )
+<<<<<<< HEAD
 from lerobot.robots.so100_follower.so100_follower import SO100Follower
+=======
+>>>>>>> sync/lerobot-v0.4.3
 from lerobot.scripts.lerobot_record import record_loop
 from lerobot.teleoperators.phone.config_phone import PhoneConfig, PhoneOS
 from lerobot.teleoperators.phone.phone_processor import MapPhoneActionToRobotAction

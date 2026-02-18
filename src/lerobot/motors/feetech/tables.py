@@ -205,6 +205,10 @@ MODEL_BAUDRATE_TABLE = {
 
 # Sign-Magnitude encoding bits
 STS_SMS_SERIES_ENCODINGS_TABLE = {
+<<<<<<< HEAD
+=======
+    "Present_Load": 10,
+>>>>>>> sync/lerobot-v0.4.3
     "Homing_Offset": 11,
     "Goal_Position": 15,
     "Goal_Velocity": 15,

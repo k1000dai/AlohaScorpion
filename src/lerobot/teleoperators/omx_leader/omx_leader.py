@@ -23,7 +23,11 @@ from lerobot.motors.dynamixel import (
     DynamixelMotorsBus,
     OperatingMode,
 )
+<<<<<<< HEAD
 from lerobot.utils.errors import DeviceAlreadyConnectedError, DeviceNotConnectedError
+=======
+from lerobot.utils.decorators import check_if_already_connected, check_if_not_connected
+>>>>>>> sync/lerobot-v0.4.3
 
 from ..teleoperator import Teleoperator
 from .config_omx_leader import OmxLeaderConfig
@@ -68,10 +72,15 @@ class OmxLeader(Teleoperator):
     def is_connected(self) -> bool:
         return self.bus.is_connected
 
+<<<<<<< HEAD
     def connect(self, calibrate: bool = True) -> None:
         if self.is_connected:
             raise DeviceAlreadyConnectedError(f"{self} already connected")
 
+=======
+    @check_if_already_connected
+    def connect(self, calibrate: bool = True) -> None:
+>>>>>>> sync/lerobot-v0.4.3
         self.bus.connect()
         if not self.is_calibrated and calibrate:
             logger.info(
@@ -142,10 +151,15 @@ class OmxLeader(Teleoperator):
             self.bus.setup_motor(motor)
             print(f"'{motor}' motor id set to {self.bus.motors[motor].id}")
 
+<<<<<<< HEAD
     def get_action(self) -> dict[str, float]:
         if not self.is_connected:
             raise DeviceNotConnectedError(f"{self} is not connected.")
 
+=======
+    @check_if_not_connected
+    def get_action(self) -> dict[str, float]:
+>>>>>>> sync/lerobot-v0.4.3
         start = time.perf_counter()
         action = self.bus.sync_read("Present_Position")
         action = {f"{motor}.pos": val for motor, val in action.items()}
@@ -157,9 +171,14 @@ class OmxLeader(Teleoperator):
         # TODO(rcadene, aliberts): Implement force feedback
         raise NotImplementedError
 
+<<<<<<< HEAD
     def disconnect(self) -> None:
         if not self.is_connected:
             raise DeviceNotConnectedError(f"{self} is not connected.")
 
+=======
+    @check_if_not_connected
+    def disconnect(self) -> None:
+>>>>>>> sync/lerobot-v0.4.3
         self.bus.disconnect()
         logger.info(f"{self} disconnected.")

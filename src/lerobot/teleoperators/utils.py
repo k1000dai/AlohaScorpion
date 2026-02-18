@@ -46,11 +46,19 @@ def make_teleoperator_from_config(config: TeleoperatorConfig) -> Teleoperator:
 
         return OmxLeader(config)
     elif config.type == "so100_leader":
+<<<<<<< HEAD
         from .so100_leader import SO100Leader
 
         return SO100Leader(config)
     elif config.type == "so101_leader":
         from .so101_leader import SO101Leader
+=======
+        from .so_leader import SO100Leader
+
+        return SO100Leader(config)
+    elif config.type == "so101_leader":
+        from .so_leader import SO101Leader
+>>>>>>> sync/lerobot-v0.4.3
 
         return SO101Leader(config)
     elif config.type == "mock_teleop":
@@ -73,10 +81,17 @@ def make_teleoperator_from_config(config: TeleoperatorConfig) -> Teleoperator:
         from .homunculus import HomunculusArm
 
         return HomunculusArm(config)
+<<<<<<< HEAD
     elif config.type == "bi_so100_leader":
         from .bi_so100_leader import BiSO100Leader
 
         return BiSO100Leader(config)
+=======
+    elif config.type == "bi_so_leader":
+        from .bi_so_leader import BiSOLeader
+
+        return BiSOLeader(config)
+>>>>>>> sync/lerobot-v0.4.3
     elif config.type == "reachy2_teleoperator":
         from .reachy2_teleoperator import Reachy2Teleoperator
 

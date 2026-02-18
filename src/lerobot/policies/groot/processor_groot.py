@@ -51,7 +51,15 @@ from lerobot.processor.converters import (
 )
 from lerobot.processor.core import EnvTransition, TransitionKey
 from lerobot.utils.constants import (
+<<<<<<< HEAD
     HF_LEROBOT_HOME,
+=======
+    ACTION,
+    HF_LEROBOT_HOME,
+    OBS_IMAGE,
+    OBS_IMAGES,
+    OBS_STATE,
+>>>>>>> sync/lerobot-v0.4.3
     POLICY_POSTPROCESSOR_DEFAULT_NAME,
     POLICY_PREPROCESSOR_DEFAULT_NAME,
 )
@@ -107,9 +115,15 @@ def make_groot_pre_post_processors(
     # Define feature specs for optional normalization steps
     _features: dict[str, PolicyFeature] = {
         # Observation features (only add those we may normalize)
+<<<<<<< HEAD
         "observation.state": PolicyFeature(type=FeatureType.STATE, shape=(state_horizon, max_state_dim)),
         # Action feature
         "action": PolicyFeature(type=FeatureType.ACTION, shape=(action_horizon, max_action_dim)),
+=======
+        OBS_STATE: PolicyFeature(type=FeatureType.STATE, shape=(state_horizon, max_state_dim)),
+        # Action feature
+        ACTION: PolicyFeature(type=FeatureType.ACTION, shape=(action_horizon, max_action_dim)),
+>>>>>>> sync/lerobot-v0.4.3
     }
 
     # Normalize STATE and ACTION with min_max (SO100-like default)
@@ -120,7 +134,11 @@ def make_groot_pre_post_processors(
 
     # Determine env action dimension from config (simple, object-like PolicyFeature)
     try:
+<<<<<<< HEAD
         env_action_dim = int(config.output_features["action"].shape[0])
+=======
+        env_action_dim = int(config.output_features[ACTION].shape[0])
+>>>>>>> sync/lerobot-v0.4.3
     except Exception:
         env_action_dim = 0
 
@@ -268,9 +286,15 @@ class GrootPackInputsStep(ProcessorStep):
             return torch.where(mask, mapped, torch.zeros_like(mapped))
 
         # 1) Video (B, T=1, V, H, W, C) uint8
+<<<<<<< HEAD
         img_keys = sorted([k for k in obs if k.startswith("observation.images.")])
         if not img_keys and "observation.image" in obs:
             img_keys = ["observation.image"]
+=======
+        img_keys = sorted([k for k in obs if k.startswith(OBS_IMAGES)])
+        if not img_keys and OBS_IMAGE in obs:
+            img_keys = [OBS_IMAGE]
+>>>>>>> sync/lerobot-v0.4.3
         if img_keys:
             cams = [_to_uint8_np_bhwc(obs[k]) for k in img_keys]
             video = np.stack(cams, axis=1)  # (B, V, H, W, C)
@@ -294,14 +318,23 @@ class GrootPackInputsStep(ProcessorStep):
         comp["language"] = lang
 
         # 3) State/state_mask -> (B, 1, max_state_dim)
+<<<<<<< HEAD
         if "observation.state" in obs:
             state = obs["observation.state"]  # (B, D)
+=======
+        if OBS_STATE in obs:
+            state = obs[OBS_STATE]  # (B, D)
+>>>>>>> sync/lerobot-v0.4.3
             if state.dim() != 2:
                 raise ValueError(f"state must be (B, D), got {tuple(state.shape)}")
             bsz, d = state.shape
             # Normalize BEFORE padding
             if self.normalize_min_max:
+<<<<<<< HEAD
                 state = _min_max_norm(state, "observation.state")
+=======
+                state = _min_max_norm(state, OBS_STATE)
+>>>>>>> sync/lerobot-v0.4.3
             state = state.unsqueeze(1)  # (B, 1, D)
             if d > self.max_state_dim:
                 state = state[:, :, : self.max_state_dim]
@@ -320,11 +353,19 @@ class GrootPackInputsStep(ProcessorStep):
             # Normalize BEFORE temporal expansion/padding
             if self.normalize_min_max:
                 if action.dim() == 2:
+<<<<<<< HEAD
                     action = _min_max_norm(action, "action")
                 elif action.dim() == 3:
                     b, t, d = action.shape
                     flat = action.reshape(b * t, d)
                     flat = _min_max_norm(flat, "action")
+=======
+                    action = _min_max_norm(action, ACTION)
+                elif action.dim() == 3:
+                    b, t, d = action.shape
+                    flat = action.reshape(b * t, d)
+                    flat = _min_max_norm(flat, ACTION)
+>>>>>>> sync/lerobot-v0.4.3
                     action = flat.view(b, t, d)
             if action.dim() == 2:
                 action = action.unsqueeze(1).repeat(1, self.action_horizon, 1)
@@ -590,7 +631,11 @@ class GrootActionUnpackUnnormalizeStep(ProcessorStep):
         # forward: y = 2 * (x - min) / denom - 1, with y=0 when denom==0
         # inverse: x = (y+1)/2 * denom + min, and when denom==0 -> x = min
         if self.normalize_min_max and self.stats is not None:
+<<<<<<< HEAD
             stats_k = self.stats.get("action", {})
+=======
+            stats_k = self.stats.get(ACTION, {})
+>>>>>>> sync/lerobot-v0.4.3
             d = action.shape[-1]
             min_v = torch.as_tensor(
                 stats_k.get("min", torch.zeros(d)), dtype=action.dtype, device=action.device

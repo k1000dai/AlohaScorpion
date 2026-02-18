@@ -30,7 +30,11 @@ from lerobot.utils.constants import ACTION
 
 from .converters import from_tensor_to_numpy, to_tensor
 from .core import EnvTransition, PolicyAction, TransitionKey
+<<<<<<< HEAD
 from .pipeline import PolicyProcessorPipeline, ProcessorStep, ProcessorStepRegistry
+=======
+from .pipeline import PolicyProcessorPipeline, ProcessorStep, ProcessorStepRegistry, RobotObservation
+>>>>>>> sync/lerobot-v0.4.3
 
 
 @dataclass
@@ -239,7 +243,11 @@ class _NormalizationMixin:
             config["normalize_observation_keys"] = sorted(self.normalize_observation_keys)
         return config
 
+<<<<<<< HEAD
     def _normalize_observation(self, observation: dict[str, Any], inverse: bool) -> dict[str, Tensor]:
+=======
+    def _normalize_observation(self, observation: RobotObservation, inverse: bool) -> dict[str, Tensor]:
+>>>>>>> sync/lerobot-v0.4.3
         """
         Applies (un)normalization to all relevant features in an observation dictionary.
 

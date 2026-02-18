@@ -33,11 +33,19 @@ def make_robot_from_config(config: RobotConfig) -> Robot:
 
         return OmxFollower(config)
     elif config.type == "so100_follower":
+<<<<<<< HEAD
         from .so100_follower import SO100Follower
 
         return SO100Follower(config)
     elif config.type == "so101_follower":
         from .so101_follower import SO101Follower
+=======
+        from .so_follower import SO100Follower
+
+        return SO100Follower(config)
+    elif config.type == "so101_follower":
+        from .so_follower import SO101Follower
+>>>>>>> sync/lerobot-v0.4.3
 
         return SO101Follower(config)
     elif config.type == "lekiwi":
@@ -52,10 +60,17 @@ def make_robot_from_config(config: RobotConfig) -> Robot:
         from .hope_jr import HopeJrArm
 
         return HopeJrArm(config)
+<<<<<<< HEAD
     elif config.type == "bi_so100_follower":
         from .bi_so100_follower import BiSO100Follower
 
         return BiSO100Follower(config)
+=======
+    elif config.type == "bi_so_follower":
+        from .bi_so_follower import BiSOFollower
+
+        return BiSOFollower(config)
+>>>>>>> sync/lerobot-v0.4.3
     elif config.type == "reachy2":
         from .reachy2 import Reachy2Robot
 

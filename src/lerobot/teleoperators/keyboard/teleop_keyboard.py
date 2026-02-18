@@ -21,7 +21,12 @@ import time
 from queue import Queue
 from typing import Any
 
+<<<<<<< HEAD
 from lerobot.utils.errors import DeviceAlreadyConnectedError, DeviceNotConnectedError
+=======
+from lerobot.processor import RobotAction
+from lerobot.utils.decorators import check_if_already_connected, check_if_not_connected
+>>>>>>> sync/lerobot-v0.4.3
 
 from ..teleoperator import Teleoperator
 from ..utils import TeleopEvents
@@ -85,12 +90,17 @@ class KeyboardTeleop(Teleoperator):
     def is_calibrated(self) -> bool:
         pass
 
+<<<<<<< HEAD
     def connect(self) -> None:
         if self.is_connected:
             raise DeviceAlreadyConnectedError(
                 "Keyboard is already connected. Do not run `robot.connect()` twice."
             )
 
+=======
+    @check_if_already_connected
+    def connect(self) -> None:
+>>>>>>> sync/lerobot-v0.4.3
         if PYNPUT_AVAILABLE:
             logging.info("pynput is available - enabling local keyboard listener.")
             self.listener = keyboard.Listener(
@@ -124,6 +134,7 @@ class KeyboardTeleop(Teleoperator):
     def configure(self):
         pass
 
+<<<<<<< HEAD
     def get_action(self) -> dict[str, Any]:
         before_read_t = time.perf_counter()
 
@@ -132,6 +143,12 @@ class KeyboardTeleop(Teleoperator):
                 "KeyboardTeleop is not connected. You need to run `connect()` before `get_action()`."
             )
 
+=======
+    @check_if_not_connected
+    def get_action(self) -> RobotAction:
+        before_read_t = time.perf_counter()
+
+>>>>>>> sync/lerobot-v0.4.3
         self._drain_pressed_keys()
 
         # Generate action based on current key states
@@ -143,11 +160,16 @@ class KeyboardTeleop(Teleoperator):
     def send_feedback(self, feedback: dict[str, Any]) -> None:
         pass
 
+<<<<<<< HEAD
     def disconnect(self) -> None:
         if not self.is_connected:
             raise DeviceNotConnectedError(
                 "KeyboardTeleop is not connected. You need to run `robot.connect()` before `disconnect()`."
             )
+=======
+    @check_if_not_connected
+    def disconnect(self) -> None:
+>>>>>>> sync/lerobot-v0.4.3
         if self.listener is not None:
             self.listener.stop()
 
@@ -181,12 +203,17 @@ class KeyboardEndEffectorTeleop(KeyboardTeleop):
                 "names": {"delta_x": 0, "delta_y": 1, "delta_z": 2},
             }
 
+<<<<<<< HEAD
     def get_action(self) -> dict[str, Any]:
         if not self.is_connected:
             raise DeviceNotConnectedError(
                 "KeyboardTeleop is not connected. You need to run `connect()` before `get_action()`."
             )
 
+=======
+    @check_if_not_connected
+    def get_action(self) -> RobotAction:
+>>>>>>> sync/lerobot-v0.4.3
         self._drain_pressed_keys()
         delta_x = 0.0
         delta_y = 0.0
@@ -374,11 +401,17 @@ class KeyboardRoverTeleop(KeyboardTeleop):
                 # Only remove key if it's being released
                 self.current_pressed.pop(key_char, None)
 
+<<<<<<< HEAD
     def get_action(self) -> dict[str, Any]:
+=======
+    @check_if_not_connected
+    def get_action(self) -> RobotAction:
+>>>>>>> sync/lerobot-v0.4.3
         """
         Get the current action based on pressed keys.
 
         Returns:
+<<<<<<< HEAD
             dict with 'linear.vel' and 'angular.vel' keys
         """
         before_read_t = time.perf_counter()
@@ -388,6 +421,12 @@ class KeyboardRoverTeleop(KeyboardTeleop):
                 "KeyboardRoverTeleop is not connected. You need to run `connect()` before `get_action()`."
             )
 
+=======
+            RobotAction with 'linear.vel' and 'angular.vel' keys
+        """
+        before_read_t = time.perf_counter()
+
+>>>>>>> sync/lerobot-v0.4.3
         self._drain_pressed_keys()
 
         linear_velocity = 0.0

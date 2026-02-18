@@ -328,11 +328,24 @@ class VoiceExecutor:
             params = parsed["__replay"] or {}
             dataset = str(params.get("dataset", "liyitenga/record_20251015131957"))
             episode = int(params.get("episode", 0))
+<<<<<<< HEAD
             import sys, subprocess, shlex
             cmd = [sys.executable, "examples/alohamini/replay_bi.py",
                 "--dataset", dataset, "--episode", str(episode)]
             print(f"[ASR] Trigger detected → Executing: {' '.join(shlex.quote(c) for c in cmd)}")
             subprocess.Popen(cmd, cwd="/home/worker/lerobot_alohamini") 
+=======
+            cmd = [
+                sys.executable,
+                "examples/alohamini_scorpion/replay_bi.py",
+                "--dataset",
+                dataset,
+                "--episode",
+                str(episode),
+            ]
+            print(f"[ASR] Trigger detected → Executing: {' '.join(shlex.quote(c) for c in cmd)}")
+            subprocess.Popen(cmd)
+>>>>>>> sync/lerobot-v0.4.3
             
 
 
@@ -396,4 +409,7 @@ class VoiceExecutor:
 
         return {**base_cmd, **z_cmd}
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> sync/lerobot-v0.4.3
