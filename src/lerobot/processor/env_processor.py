@@ -18,11 +18,7 @@ from dataclasses import dataclass
 import torch
 
 from lerobot.configs.types import PipelineFeatureType, PolicyFeature
-<<<<<<< HEAD
-from lerobot.utils.constants import OBS_IMAGES, OBS_STATE
-=======
 from lerobot.utils.constants import OBS_IMAGES, OBS_PREFIX, OBS_STATE, OBS_STR
->>>>>>> sync/lerobot-v0.4.3
 
 from .pipeline import ObservationProcessorStep, ProcessorStepRegistry
 
@@ -64,14 +60,9 @@ class LiberoProcessorStep(ObservationProcessorStep):
 
                 processed_obs[key] = img
         # Process robot_state into a flat state vector
-<<<<<<< HEAD
-        if "observation.robot_state" in processed_obs:
-            robot_state = processed_obs.pop("observation.robot_state")
-=======
         observation_robot_state_str = OBS_PREFIX + "robot_state"
         if observation_robot_state_str in processed_obs:
             robot_state = processed_obs.pop(observation_robot_state_str)
->>>>>>> sync/lerobot-v0.4.3
 
             # Extract components
             eef_pos = robot_state["eef"]["pos"]  # (B, 3,)
@@ -108,13 +99,8 @@ class LiberoProcessorStep(ObservationProcessorStep):
         state_feats = {}
 
         # add our new flattened state
-<<<<<<< HEAD
-        state_feats["observation.state"] = PolicyFeature(
-            key="observation.state",
-=======
         state_feats[OBS_STATE] = PolicyFeature(
             key=OBS_STATE,
->>>>>>> sync/lerobot-v0.4.3
             shape=(8,),  # [eef_pos(3), axis_angle(3), gripper(2)]
             dtype="float32",
             description=("Concatenated end-effector position (3), axis-angle (3), and gripper qpos (2)."),
@@ -167,8 +153,6 @@ class LiberoProcessorStep(ObservationProcessorStep):
             result[mask] = axis * angle.unsqueeze(1)
 
         return result
-<<<<<<< HEAD
-=======
 
 
 @dataclass
@@ -244,4 +228,3 @@ class IsaaclabArenaProcessorStep(ObservationProcessorStep):
 
     def observation(self, observation):
         return self._process_observation(observation)
->>>>>>> sync/lerobot-v0.4.3

@@ -20,10 +20,7 @@ from typing import Any
 import draccus
 
 from lerobot.motors.motors_bus import MotorCalibration
-<<<<<<< HEAD
-=======
 from lerobot.processor import RobotAction
->>>>>>> sync/lerobot-v0.4.3
 from lerobot.utils.constants import HF_LEROBOT_CALIBRATION, TELEOPERATORS
 
 from .config import TeleoperatorConfig
@@ -61,8 +58,6 @@ class Teleoperator(abc.ABC):
     def __str__(self) -> str:
         return f"{self.id} {self.__class__.__name__}"
 
-<<<<<<< HEAD
-=======
     def __enter__(self):
         """
         Context manager entry.
@@ -89,7 +84,6 @@ class Teleoperator(abc.ABC):
         except Exception:  # nosec B110
             pass
 
->>>>>>> sync/lerobot-v0.4.3
     @property
     @abc.abstractmethod
     def action_features(self) -> dict:
@@ -183,20 +177,12 @@ class Teleoperator(abc.ABC):
         pass
 
     @abc.abstractmethod
-<<<<<<< HEAD
-    def get_action(self) -> dict[str, Any]:
-=======
     def get_action(self) -> RobotAction:
->>>>>>> sync/lerobot-v0.4.3
         """
         Retrieve the current action from the teleoperator.
 
         Returns:
-<<<<<<< HEAD
-            dict[str, Any]: A flat dictionary representing the teleoperator's current actions. Its
-=======
             RobotAction: A flat dictionary representing the teleoperator's current actions. Its
->>>>>>> sync/lerobot-v0.4.3
                 structure should match :pymeth:`observation_features`.
         """
         pass

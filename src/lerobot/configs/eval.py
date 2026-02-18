@@ -38,11 +38,8 @@ class EvalPipelineConfig:
     seed: int | None = 1000
     # Rename map for the observation to override the image and state keys
     rename_map: dict[str, str] = field(default_factory=dict)
-<<<<<<< HEAD
-=======
     # Explicit consent to execute remote code from the Hub (required for hub environments).
     trust_remote_code: bool = False
->>>>>>> sync/lerobot-v0.4.3
 
     def __post_init__(self) -> None:
         # HACK: We parse again the cli args here to get the pretrained path if there was one.

@@ -16,11 +16,8 @@
 
 from dataclasses import dataclass, field
 
-<<<<<<< HEAD
-=======
 from lerobot.cameras import CameraConfig
 
->>>>>>> sync/lerobot-v0.4.3
 from ..config import RobotConfig
 
 _GAINS: dict[str, dict[str, list[float]]] = {
@@ -54,15 +51,6 @@ class UnitreeG1Config(RobotConfig):
     kp: list[float] = field(default_factory=lambda: _DEFAULT_KP.copy())
     kd: list[float] = field(default_factory=lambda: _DEFAULT_KD.copy())
 
-<<<<<<< HEAD
-    control_dt: float = 1.0 / 250.0  # 250Hz
-
-    # launch mujoco simulation
-    is_simulation: bool = True
-
-    # socket config for ZMQ bridge
-    robot_ip: str = "192.168.123.164"
-=======
     # Default joint positions
     default_positions: list[float] = field(default_factory=lambda: [0.0] * 29)
 
@@ -77,4 +65,3 @@ class UnitreeG1Config(RobotConfig):
 
     # Cameras (ZMQ-based remote cameras)
     cameras: dict[str, CameraConfig] = field(default_factory=dict)
->>>>>>> sync/lerobot-v0.4.3

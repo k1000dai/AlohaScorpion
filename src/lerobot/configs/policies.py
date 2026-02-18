@@ -55,26 +55,18 @@ class PreTrainedConfig(draccus.ChoiceRegistry, HubMixin, abc.ABC):  # type: igno
 
     n_obs_steps: int = 1
 
-<<<<<<< HEAD
-    input_features: dict[str, PolicyFeature] = field(default_factory=dict)
-    output_features: dict[str, PolicyFeature] = field(default_factory=dict)
-=======
     # `input_features` can be set to None/null in order to infer those values from the dataset.
     input_features: dict[str, PolicyFeature] | None = field(default_factory=dict)
     output_features: dict[str, PolicyFeature] | None = field(default_factory=dict)
->>>>>>> sync/lerobot-v0.4.3
 
     device: str | None = None  # e.g. "cuda", "cuda:0", "cpu", or "mps"
     # `use_amp` determines whether to use Automatic Mixed Precision (AMP) for training and evaluation. With AMP,
     # automatic gradient scaling is used.
     use_amp: bool = False
 
-<<<<<<< HEAD
-=======
     # Whether the policy employed PEFT for training.
     use_peft: bool = False
 
->>>>>>> sync/lerobot-v0.4.3
     push_to_hub: bool = True  # type: ignore[assignment] # TODO: use a different name to avoid override
     repo_id: str | None = None
 
@@ -137,11 +129,8 @@ class PreTrainedConfig(draccus.ChoiceRegistry, HubMixin, abc.ABC):  # type: igno
 
     @property
     def robot_state_feature(self) -> PolicyFeature | None:
-<<<<<<< HEAD
-=======
         if not self.input_features:
             return None
->>>>>>> sync/lerobot-v0.4.3
         for ft_name, ft in self.input_features.items():
             if ft.type is FeatureType.STATE and ft_name == OBS_STATE:
                 return ft
@@ -149,11 +138,8 @@ class PreTrainedConfig(draccus.ChoiceRegistry, HubMixin, abc.ABC):  # type: igno
 
     @property
     def env_state_feature(self) -> PolicyFeature | None:
-<<<<<<< HEAD
-=======
         if not self.input_features:
             return None
->>>>>>> sync/lerobot-v0.4.3
         for _, ft in self.input_features.items():
             if ft.type is FeatureType.ENV:
                 return ft
@@ -161,20 +147,14 @@ class PreTrainedConfig(draccus.ChoiceRegistry, HubMixin, abc.ABC):  # type: igno
 
     @property
     def image_features(self) -> dict[str, PolicyFeature]:
-<<<<<<< HEAD
-=======
         if not self.input_features:
             return {}
->>>>>>> sync/lerobot-v0.4.3
         return {key: ft for key, ft in self.input_features.items() if ft.type is FeatureType.VISUAL}
 
     @property
     def action_feature(self) -> PolicyFeature | None:
-<<<<<<< HEAD
-=======
         if not self.output_features:
             return None
->>>>>>> sync/lerobot-v0.4.3
         for ft_name, ft in self.output_features.items():
             if ft.type is FeatureType.ACTION and ft_name == ACTION:
                 return ft

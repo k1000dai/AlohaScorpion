@@ -13,10 +13,7 @@
 # limitations under the License.
 import abc
 import builtins
-<<<<<<< HEAD
-=======
 import dataclasses
->>>>>>> sync/lerobot-v0.4.3
 import logging
 import os
 from importlib.resources import files
@@ -210,10 +207,7 @@ class PreTrainedPolicy(nn.Module, HubMixin, abc.ABC):
     def push_model_to_hub(
         self,
         cfg: TrainPipelineConfig,
-<<<<<<< HEAD
-=======
         peft_model=None,
->>>>>>> sync/lerobot-v0.4.3
     ):
         api = HfApi()
         repo_id = api.create_repo(
@@ -224,9 +218,6 @@ class PreTrainedPolicy(nn.Module, HubMixin, abc.ABC):
         with TemporaryDirectory(ignore_cleanup_errors=True) as tmp:
             saved_path = Path(tmp) / repo_id
 
-<<<<<<< HEAD
-            self.save_pretrained(saved_path)  # Calls _save_pretrained and stores model tensors
-=======
             if peft_model is not None:
                 # Since PEFT just forwards calls to `push_model_to_hub`, `self` is not the PeftModel wrapper
                 # but the actual policy which is why we need the PEFT model passed to us to save the adapter.
@@ -235,7 +226,6 @@ class PreTrainedPolicy(nn.Module, HubMixin, abc.ABC):
                 self.config.save_pretrained(saved_path)
             else:
                 self.save_pretrained(saved_path)  # Calls _save_pretrained and stores model tensors
->>>>>>> sync/lerobot-v0.4.3
 
             card = self.generate_model_card(
                 cfg.dataset.repo_id, self.config.type, self.config.license, self.config.tags
@@ -276,8 +266,6 @@ class PreTrainedPolicy(nn.Module, HubMixin, abc.ABC):
         card = ModelCard.from_template(card_data, template_str=template_card)
         card.validate()
         return card
-<<<<<<< HEAD
-=======
 
     def wrap_with_peft(
         self,
@@ -441,4 +429,3 @@ class PreTrainedPolicy(nn.Module, HubMixin, abc.ABC):
                 config_dict[key] = value
 
         return peft_config_cls(**config_dict)
->>>>>>> sync/lerobot-v0.4.3

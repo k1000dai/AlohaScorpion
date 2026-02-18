@@ -1,18 +1,11 @@
 #!/usr/bin/env python3
 
-<<<<<<< HEAD
-from lerobot.datasets.lerobot_dataset import LeRobotDataset
-from lerobot.datasets.utils import hw_to_dataset_features
-from lerobot.policies.act.modeling_act import ACTPolicy
-from lerobot.policies.factory import make_pre_post_processors
-=======
 import argparse
 
 from lerobot.configs.policies import PreTrainedConfig
 from lerobot.datasets.lerobot_dataset import LeRobotDataset
 from lerobot.datasets.utils import hw_to_dataset_features
 from lerobot.policies.factory import make_policy, make_pre_post_processors
->>>>>>> sync/lerobot-v0.4.3
 from lerobot.processor import make_default_processors
 from lerobot.robots.alohamini_scorpion import LeKiwiClient, LeKiwiClientConfig
 from lerobot.scripts.lerobot_record import record_loop
@@ -21,11 +14,6 @@ from lerobot.utils.control_utils import init_keyboard_listener
 from lerobot.utils.utils import log_say
 from lerobot.utils.visualization_utils import init_rerun
 
-<<<<<<< HEAD
-import argparse
-
-=======
->>>>>>> sync/lerobot-v0.4.3
 
 def main():
     parser = argparse.ArgumentParser(description="Evaluate LeKiwi Robot with a pretrained policy")
@@ -47,14 +35,9 @@ def main():
     robot = LeKiwiClient(robot_config)
     robot.connect()
 
-<<<<<<< HEAD
-    # === Policy ===
-    policy = ACTPolicy.from_pretrained(args.hf_model_id)
-=======
     # === Policy config ===
     policy_cfg = PreTrainedConfig.from_pretrained(args.hf_model_id)
     policy_cfg.pretrained_path = args.hf_model_id
->>>>>>> sync/lerobot-v0.4.3
 
     # Prime one observation to let the client discover camera names from host stream.
     robot.get_observation()
@@ -64,11 +47,7 @@ def main():
     obs_features = hw_to_dataset_features(robot.observation_features, OBS_STR)
     dataset_features = {**action_features, **obs_features}
 
-<<<<<<< HEAD
-    expected_image_keys = set(policy.config.image_features.keys())
-=======
     expected_image_keys = set(policy_cfg.image_features.keys())
->>>>>>> sync/lerobot-v0.4.3
     available_image_keys = {k for k in dataset_features if k.startswith(f"{OBS_STR}.images.")}
     missing_image_keys = expected_image_keys - available_image_keys
     if missing_image_keys:
@@ -86,14 +65,6 @@ def main():
         image_writer_threads=4,
     )
 
-<<<<<<< HEAD
-    # === Policy Processors ===
-    preprocessor, postprocessor = make_pre_post_processors(
-        policy_cfg=policy,
-        pretrained_path=args.hf_model_id,
-        dataset_stats=dataset.meta.stats,
-        preprocessor_overrides={"device_processor": {"device": str(policy.config.device)}},
-=======
     # === Policy ===
     policy = make_policy(policy_cfg, ds_meta=dataset.meta)
 
@@ -103,7 +74,6 @@ def main():
         pretrained_path=policy_cfg.pretrained_path,
         dataset_stats=dataset.meta.stats,
         preprocessor_overrides={"device_processor": {"device": str(policy_cfg.device)}},
->>>>>>> sync/lerobot-v0.4.3
     )
 
     teleop_action_processor, robot_action_processor, robot_observation_processor = make_default_processors()

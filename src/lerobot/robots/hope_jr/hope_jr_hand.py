@@ -17,10 +17,6 @@
 import logging
 import time
 from functools import cached_property
-<<<<<<< HEAD
-from typing import Any
-=======
->>>>>>> sync/lerobot-v0.4.3
 
 from lerobot.cameras.utils import make_cameras_from_configs
 from lerobot.motors import Motor, MotorNormMode
@@ -28,12 +24,8 @@ from lerobot.motors.calibration_gui import RangeFinderGUI
 from lerobot.motors.feetech import (
     FeetechMotorsBus,
 )
-<<<<<<< HEAD
-from lerobot.utils.errors import DeviceAlreadyConnectedError, DeviceNotConnectedError
-=======
 from lerobot.processor import RobotAction, RobotObservation
 from lerobot.utils.decorators import check_if_already_connected, check_if_not_connected
->>>>>>> sync/lerobot-v0.4.3
 
 from ..robot import Robot
 from .config_hope_jr import HopeJrHandConfig
@@ -126,15 +118,8 @@ class HopeJrHand(Robot):
     def is_connected(self) -> bool:
         return self.bus.is_connected and all(cam.is_connected for cam in self.cameras.values())
 
-<<<<<<< HEAD
-    def connect(self, calibrate: bool = True) -> None:
-        if self.is_connected:
-            raise DeviceAlreadyConnectedError(f"{self} already connected")
-
-=======
     @check_if_already_connected
     def connect(self, calibrate: bool = True) -> None:
->>>>>>> sync/lerobot-v0.4.3
         self.bus.connect()
         if not self.is_calibrated and calibrate:
             self.calibrate()
@@ -172,15 +157,8 @@ class HopeJrHand(Robot):
             self.bus.setup_motor(motor)
             print(f"'{motor}' motor id set to {self.bus.motors[motor].id}")
 
-<<<<<<< HEAD
-    def get_observation(self) -> dict[str, Any]:
-        if not self.is_connected:
-            raise DeviceNotConnectedError(f"{self} is not connected.")
-
-=======
     @check_if_not_connected
     def get_observation(self) -> RobotObservation:
->>>>>>> sync/lerobot-v0.4.3
         obs_dict = {}
 
         # Read hand position
@@ -199,28 +177,14 @@ class HopeJrHand(Robot):
 
         return obs_dict
 
-<<<<<<< HEAD
-    def send_action(self, action: dict[str, Any]) -> dict[str, Any]:
-        if not self.is_connected:
-            raise DeviceNotConnectedError(f"{self} is not connected.")
-
-=======
     @check_if_not_connected
     def send_action(self, action: RobotAction) -> RobotAction:
->>>>>>> sync/lerobot-v0.4.3
         goal_pos = {key.removesuffix(".pos"): val for key, val in action.items() if key.endswith(".pos")}
         self.bus.sync_write("Goal_Position", goal_pos)
         return action
 
-<<<<<<< HEAD
-    def disconnect(self):
-        if not self.is_connected:
-            raise DeviceNotConnectedError(f"{self} is not connected.")
-
-=======
     @check_if_not_connected
     def disconnect(self):
->>>>>>> sync/lerobot-v0.4.3
         self.bus.disconnect(self.config.disable_torque_on_disconnect)
         for cam in self.cameras.values():
             cam.disconnect()

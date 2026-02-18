@@ -480,8 +480,6 @@ class SmolVLAPolicy(PreTrainedPolicy):
         actions = pad_vector(batch[ACTION], self.config.max_action_dim)
         return actions
 
-<<<<<<< HEAD
-=======
     def _get_default_peft_targets(self) -> dict[str, any]:
         """Return default PEFT target modules for SmolVLA fine-tuning."""
         common_projections = (
@@ -504,7 +502,6 @@ class SmolVLAPolicy(PreTrainedPolicy):
                 "Set `load_vlm_weights=True` to fine-tune the existing policy."
             )
 
->>>>>>> sync/lerobot-v0.4.3
 
 def pad_tensor(tensor, max_len, pad_value=0):
     """

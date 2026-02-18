@@ -32,25 +32,15 @@ Notes:
   from LeRobot, see `GrootPolicy.finetune_with_groot_runner` below.
 """
 
-<<<<<<< HEAD
-import os
-from collections import deque
-=======
 import builtins
 import os
 from collections import deque
 from pathlib import Path
 from typing import TypeVar
->>>>>>> sync/lerobot-v0.4.3
 
 import torch
 from torch import Tensor
 
-<<<<<<< HEAD
-from lerobot.policies.groot.configuration_groot import GrootConfig
-from lerobot.policies.groot.groot_n1 import GR00TN15
-from lerobot.policies.pretrained import PreTrainedPolicy
-=======
 from lerobot.configs.types import FeatureType, PolicyFeature
 from lerobot.policies.groot.configuration_groot import GrootConfig
 from lerobot.policies.groot.groot_n1 import GR00TN15
@@ -58,7 +48,6 @@ from lerobot.policies.pretrained import PreTrainedPolicy
 from lerobot.utils.constants import ACTION, OBS_IMAGES
 
 T = TypeVar("T", bound="GrootPolicy")
->>>>>>> sync/lerobot-v0.4.3
 
 
 class GrootPolicy(PreTrainedPolicy):
@@ -107,8 +96,6 @@ class GrootPolicy(PreTrainedPolicy):
         """Reset policy state when environment resets."""
         self._action_queue = deque([], maxlen=self.config.n_action_steps)
 
-<<<<<<< HEAD
-=======
     @classmethod
     def from_pretrained(
         cls: builtins.type[T],
@@ -232,7 +219,6 @@ class GrootPolicy(PreTrainedPolicy):
         policy.eval()
         return policy
 
->>>>>>> sync/lerobot-v0.4.3
     def get_optim_params(self) -> dict:
         return self.parameters()
 
@@ -291,11 +277,7 @@ class GrootPolicy(PreTrainedPolicy):
 
         actions = outputs.get("action_pred")
 
-<<<<<<< HEAD
-        original_action_dim = self.config.output_features["action"].shape[0]
-=======
         original_action_dim = self.config.output_features[ACTION].shape[0]
->>>>>>> sync/lerobot-v0.4.3
         actions = actions[:, :, :original_action_dim]
 
         return actions

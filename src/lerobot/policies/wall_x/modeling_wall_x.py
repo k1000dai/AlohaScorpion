@@ -1697,11 +1697,7 @@ class WallXPolicy(PreTrainedPolicy):
     config_class = WallXConfig
     name = "wall_x"
 
-<<<<<<< HEAD
-    def __init__(self, config: WallXConfig):
-=======
     def __init__(self, config: WallXConfig, **kwargs):
->>>>>>> sync/lerobot-v0.4.3
         super().__init__(config)
         config.validate_features()
         self.config = config
@@ -1865,11 +1861,7 @@ class WallXPolicy(PreTrainedPolicy):
                     dim=-1,
                 )
         else:
-<<<<<<< HEAD
-            action_dim = self.config.output_features["action"].shape[0]
-=======
             action_dim = self.config.output_features[ACTION].shape[0]
->>>>>>> sync/lerobot-v0.4.3
             dof_mask = torch.cat(
                 [
                     torch.ones(
@@ -1985,11 +1977,7 @@ class WallXPolicy(PreTrainedPolicy):
         elif self.config.prediction_mode == "fast":
             output = self.model(
                 **batch,
-<<<<<<< HEAD
-                action_dim=self.config.output_features["action"].shape[0],
-=======
                 action_dim=self.config.output_features[ACTION].shape[0],
->>>>>>> sync/lerobot-v0.4.3
                 pred_horizon=self.config.chunk_size,
                 mode="predict",
                 predict_mode="fast",
@@ -2001,11 +1989,7 @@ class WallXPolicy(PreTrainedPolicy):
         actions = output["predict_action"]
 
         # Unpad actions to actual action dimension
-<<<<<<< HEAD
-        action_dim = self.config.output_features["action"].shape[0]
-=======
         action_dim = self.config.output_features[ACTION].shape[0]
->>>>>>> sync/lerobot-v0.4.3
         actions = actions[:, :, :action_dim]
 
         return actions

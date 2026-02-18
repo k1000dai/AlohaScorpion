@@ -45,11 +45,7 @@ RobotObservation: TypeAlias = dict[str, Any]
 EnvTransition = TypedDict(
     "EnvTransition",
     {
-<<<<<<< HEAD
-        TransitionKey.OBSERVATION.value: dict[str, Any] | None,
-=======
         TransitionKey.OBSERVATION.value: RobotObservation | None,
->>>>>>> sync/lerobot-v0.4.3
         TransitionKey.ACTION.value: PolicyAction | RobotAction | EnvAction | None,
         TransitionKey.REWARD.value: float | torch.Tensor | None,
         TransitionKey.DONE.value: bool | torch.Tensor | None,

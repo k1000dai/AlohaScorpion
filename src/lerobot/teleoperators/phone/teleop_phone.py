@@ -28,11 +28,7 @@ from teleop import Teleop
 
 from lerobot.teleoperators.phone.config_phone import PhoneConfig, PhoneOS
 from lerobot.teleoperators.teleoperator import Teleoperator
-<<<<<<< HEAD
-from lerobot.utils.errors import DeviceAlreadyConnectedError, DeviceNotConnectedError
-=======
 from lerobot.utils.decorators import check_if_already_connected, check_if_not_connected
->>>>>>> sync/lerobot-v0.4.3
 from lerobot.utils.rotation import Rotation
 
 logger = logging.getLogger(__name__)
@@ -85,15 +81,8 @@ class IOSPhone(BasePhone, Teleoperator):
     def is_connected(self) -> bool:
         return self._group is not None
 
-<<<<<<< HEAD
-    def connect(self) -> None:
-        if self.is_connected:
-            raise DeviceAlreadyConnectedError(f"{self} already connected")
-
-=======
     @check_if_already_connected
     def connect(self) -> None:
->>>>>>> sync/lerobot-v0.4.3
         logger.info("Connecting to IPhone, make sure to open the HEBI Mobile I/O app.")
         lookup = hebi.Lookup()
         time.sleep(2.0)
@@ -173,10 +162,7 @@ class IOSPhone(BasePhone, Teleoperator):
         pos = ar_pos - rot.apply(self.config.camera_offset)
         return True, pos, rot, pose
 
-<<<<<<< HEAD
-=======
     @check_if_not_connected
->>>>>>> sync/lerobot-v0.4.3
     def get_action(self) -> dict:
         has_pose, raw_position, raw_rotation, fb_pose = self._read_current_pose()
         if not has_pose or not self.is_calibrated:
@@ -217,15 +203,8 @@ class IOSPhone(BasePhone, Teleoperator):
             "phone.enabled": self._enabled,
         }
 
-<<<<<<< HEAD
-    def disconnect(self) -> None:
-        if not self.is_connected:
-            raise DeviceNotConnectedError(f"{self} is not connected.")
-
-=======
     @check_if_not_connected
     def disconnect(self) -> None:
->>>>>>> sync/lerobot-v0.4.3
         self._group = None
 
 
@@ -245,15 +224,8 @@ class AndroidPhone(BasePhone, Teleoperator):
     def is_connected(self) -> bool:
         return self._teleop is not None
 
-<<<<<<< HEAD
-    def connect(self) -> None:
-        if self.is_connected:
-            raise DeviceAlreadyConnectedError(f"{self} already connected")
-
-=======
     @check_if_already_connected
     def connect(self) -> None:
->>>>>>> sync/lerobot-v0.4.3
         logger.info("Starting teleop stream for Android...")
         self._teleop = Teleop()
         self._teleop.subscribe(self._android_callback)
@@ -341,10 +313,7 @@ class AndroidPhone(BasePhone, Teleoperator):
             self._latest_pose = pose
             self._latest_message = message
 
-<<<<<<< HEAD
-=======
     @check_if_not_connected
->>>>>>> sync/lerobot-v0.4.3
     def get_action(self) -> dict:
         ok, raw_pos, raw_rot, pose = self._read_current_pose()
         if not ok or not self.is_calibrated:
@@ -377,15 +346,8 @@ class AndroidPhone(BasePhone, Teleoperator):
             "phone.enabled": self._enabled,
         }
 
-<<<<<<< HEAD
-    def disconnect(self) -> None:
-        if not self.is_connected:
-            raise DeviceNotConnectedError(f"{self} is not connected.")
-
-=======
     @check_if_not_connected
     def disconnect(self) -> None:
->>>>>>> sync/lerobot-v0.4.3
         self._teleop = None
         if self._teleop_thread and self._teleop_thread.is_alive():
             self._teleop_thread.join(timeout=1.0)

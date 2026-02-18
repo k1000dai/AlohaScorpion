@@ -29,10 +29,7 @@ from torch import Tensor
 
 from lerobot.configs.types import FeatureType, PolicyFeature
 from lerobot.envs.configs import EnvConfig
-<<<<<<< HEAD
-=======
 from lerobot.processor import RobotObservation
->>>>>>> sync/lerobot-v0.4.3
 from lerobot.utils.constants import OBS_ENV_STATE, OBS_IMAGE, OBS_IMAGES, OBS_STATE, OBS_STR
 from lerobot.utils.utils import get_channel_first_image_shape
 
@@ -50,11 +47,7 @@ def _convert_nested_dict(d):
 
 
 def preprocess_observation(observations: dict[str, np.ndarray]) -> dict[str, Tensor]:
-<<<<<<< HEAD
-    # TODO(aliberts, rcadene): refactor this to use features from the environment (no hardcoding)
-=======
     # TODO(jadechoghari, imstevenpmwork): refactor this to use features from the environment (no hardcoding)
->>>>>>> sync/lerobot-v0.4.3
     """Convert environment observation to LeRobot format observation.
     Args:
         observation: Dictionary of observation batches from a Gym vector environment.
@@ -106,8 +99,6 @@ def preprocess_observation(observations: dict[str, np.ndarray]) -> dict[str, Ten
 
     if "robot_state" in observations:
         return_observations[f"{OBS_STR}.robot_state"] = _convert_nested_dict(observations["robot_state"])
-<<<<<<< HEAD
-=======
 
     # Handle IsaacLab Arena format: observations have 'policy' and 'camera_obs' keys
     if "policy" in observations:
@@ -116,16 +107,11 @@ def preprocess_observation(observations: dict[str, np.ndarray]) -> dict[str, Ten
     if "camera_obs" in observations:
         return_observations[f"{OBS_STR}.camera_obs"] = observations["camera_obs"]
 
->>>>>>> sync/lerobot-v0.4.3
     return return_observations
 
 
 def env_to_policy_features(env_cfg: EnvConfig) -> dict[str, PolicyFeature]:
-<<<<<<< HEAD
-    # TODO(aliberts, rcadene): remove this hardcoding of keys and just use the nested keys as is
-=======
     # TODO(jadechoghari, imstevenpmwork): remove this hardcoding of keys and just use the nested keys as is
->>>>>>> sync/lerobot-v0.4.3
     # (need to also refactor preprocess_observation and externalize normalization from policies)
     policy_features = {}
     for key, ft in env_cfg.features.items():
@@ -167,11 +153,7 @@ def check_env_attributes_and_types(env: gym.vector.VectorEnv) -> None:
             )
 
 
-<<<<<<< HEAD
-def add_envs_task(env: gym.vector.VectorEnv, observation: dict[str, Any]) -> dict[str, Any]:
-=======
 def add_envs_task(env: gym.vector.VectorEnv, observation: RobotObservation) -> RobotObservation:
->>>>>>> sync/lerobot-v0.4.3
     """Adds task feature to the observation dict with respect to the first environment attribute."""
     if hasattr(env.envs[0], "task_description"):
         task_result = env.call("task_description")
@@ -329,11 +311,7 @@ def _import_hub_module(local_file: str, repo_id: str) -> Any:
     return module
 
 
-<<<<<<< HEAD
-def _call_make_env(module: Any, n_envs: int, use_async_envs: bool) -> Any:
-=======
 def _call_make_env(module: Any, n_envs: int, use_async_envs: bool, cfg: EnvConfig | None) -> Any:
->>>>>>> sync/lerobot-v0.4.3
     """
     Ensure module exposes make_env and call it.
     """
@@ -342,15 +320,11 @@ def _call_make_env(module: Any, n_envs: int, use_async_envs: bool, cfg: EnvConfi
             f"The hub module {getattr(module, '__name__', 'hub_module')} must expose `make_env(n_envs=int, use_async_envs=bool)`."
         )
     entry_fn = module.make_env
-<<<<<<< HEAD
-    return entry_fn(n_envs=n_envs, use_async_envs=use_async_envs)
-=======
     # Only pass cfg if it's not None (i.e., when an EnvConfig was provided, not a string hub ID)
     if cfg is not None:
         return entry_fn(n_envs=n_envs, use_async_envs=use_async_envs, cfg=cfg)
     else:
         return entry_fn(n_envs=n_envs, use_async_envs=use_async_envs)
->>>>>>> sync/lerobot-v0.4.3
 
 
 def _normalize_hub_result(result: Any) -> dict[str, dict[int, gym.vector.VectorEnv]]:

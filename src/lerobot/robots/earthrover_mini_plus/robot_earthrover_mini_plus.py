@@ -18,22 +18,14 @@
 import base64
 import logging
 from functools import cached_property
-<<<<<<< HEAD
-from typing import Any
-=======
->>>>>>> sync/lerobot-v0.4.3
 
 import cv2
 import numpy as np
 import requests
 
-<<<<<<< HEAD
-from lerobot.utils.errors import DeviceAlreadyConnectedError, DeviceNotConnectedError
-=======
 from lerobot.processor import RobotAction, RobotObservation
 from lerobot.utils.decorators import check_if_already_connected, check_if_not_connected
 from lerobot.utils.errors import DeviceNotConnectedError
->>>>>>> sync/lerobot-v0.4.3
 
 from ..robot import Robot
 from .config_earthrover_mini_plus import EarthRoverMiniPlusConfig
@@ -108,10 +100,7 @@ class EarthRoverMiniPlus(Robot):
         """Check if robot is connected to SDK."""
         return self._is_connected
 
-<<<<<<< HEAD
-=======
     @check_if_already_connected
->>>>>>> sync/lerobot-v0.4.3
     def connect(self, calibrate: bool = True) -> None:
         """Connect to robot via Frodobots SDK.
 
@@ -122,11 +111,6 @@ class EarthRoverMiniPlus(Robot):
             DeviceAlreadyConnectedError: If robot is already connected
             DeviceNotConnectedError: If cannot connect to SDK server
         """
-<<<<<<< HEAD
-        if self._is_connected:
-            raise DeviceAlreadyConnectedError(f"{self.name} is already connected")
-=======
->>>>>>> sync/lerobot-v0.4.3
 
         # Verify SDK is running and accessible
         try:
@@ -213,20 +197,12 @@ class EarthRoverMiniPlus(Robot):
             ACTION_ANGULAR_VEL: float,
         }
 
-<<<<<<< HEAD
-    def get_observation(self) -> dict[str, Any]:
-        """Get current robot observation from SDK.
-
-        Returns:
-            dict: Observation containing:
-=======
     @check_if_not_connected
     def get_observation(self) -> RobotObservation:
         """Get current robot observation from SDK.
 
         Returns:
             RobotObservation: Observation containing:
->>>>>>> sync/lerobot-v0.4.3
                 - front: Front camera image (480, 640, 3) in RGB format
                 - rear: Rear camera image (480, 640, 3) in RGB format
                 - linear.vel: Current speed (0-1, SDK reports only positive speeds)
@@ -248,11 +224,6 @@ class EarthRoverMiniPlus(Robot):
             Robot telemetry is retrieved from /data endpoint.
             All SDK values are normalized to appropriate ranges for dataset recording.
         """
-<<<<<<< HEAD
-        if not self._is_connected:
-            raise DeviceNotConnectedError(f"{self.name} is not connected")
-=======
->>>>>>> sync/lerobot-v0.4.3
 
         observation = {}
 
@@ -283,12 +254,8 @@ class EarthRoverMiniPlus(Robot):
 
         return observation
 
-<<<<<<< HEAD
-    def send_action(self, action: dict[str, Any]) -> dict[str, Any]:
-=======
     @check_if_not_connected
     def send_action(self, action: RobotAction) -> RobotAction:
->>>>>>> sync/lerobot-v0.4.3
         """Send action to robot via SDK.
 
         Args:
@@ -297,12 +264,7 @@ class EarthRoverMiniPlus(Robot):
                 - angular.vel: Target angular velocity (-1 to 1)
 
         Returns:
-<<<<<<< HEAD
-            dict: The action that was sent (matches action_features keys)
-
-=======
             RobotAction: The action that was sent (matches action_features keys)
->>>>>>> sync/lerobot-v0.4.3
         Raises:
             DeviceNotConnectedError: If robot is not connected
 
@@ -310,11 +272,6 @@ class EarthRoverMiniPlus(Robot):
             Actions are sent to SDK via POST /control endpoint.
             SDK expects commands in range [-1, 1].
         """
-<<<<<<< HEAD
-        if not self._is_connected:
-            raise DeviceNotConnectedError(f"{self.name} is not connected")
-=======
->>>>>>> sync/lerobot-v0.4.3
 
         # Extract action values and convert to float
         linear = float(action.get(ACTION_LINEAR_VEL, 0.0))
@@ -332,10 +289,7 @@ class EarthRoverMiniPlus(Robot):
             ACTION_ANGULAR_VEL: angular,
         }
 
-<<<<<<< HEAD
-=======
     @check_if_not_connected
->>>>>>> sync/lerobot-v0.4.3
     def disconnect(self) -> None:
         """Disconnect from robot.
 
@@ -344,11 +298,6 @@ class EarthRoverMiniPlus(Robot):
         Raises:
             DeviceNotConnectedError: If robot is not connected
         """
-<<<<<<< HEAD
-        if not self._is_connected:
-            raise DeviceNotConnectedError(f"{self.name} is not connected")
-=======
->>>>>>> sync/lerobot-v0.4.3
 
         # Stop the robot before disconnecting
         try:

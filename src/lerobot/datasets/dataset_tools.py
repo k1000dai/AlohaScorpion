@@ -26,10 +26,7 @@ This module provides utilities for:
 import logging
 import shutil
 from collections.abc import Callable
-<<<<<<< HEAD
-=======
 from concurrent.futures import ThreadPoolExecutor, as_completed
->>>>>>> sync/lerobot-v0.4.3
 from pathlib import Path
 
 import datasets
@@ -55,12 +52,8 @@ from lerobot.datasets.utils import (
     write_stats,
     write_tasks,
 )
-<<<<<<< HEAD
-from lerobot.utils.constants import HF_LEROBOT_HOME
-=======
 from lerobot.datasets.video_utils import encode_video_frames, get_video_info
 from lerobot.utils.constants import HF_LEROBOT_HOME, OBS_IMAGE
->>>>>>> sync/lerobot-v0.4.3
 
 
 def _load_episode_with_stats(src_dataset: LeRobotDataset, episode_idx: int) -> dict:
@@ -1092,8 +1085,6 @@ def _copy_episodes_metadata_and_stats(
     else:
         if src_dataset.meta.stats:
             write_stats(src_dataset.meta.stats, dst_meta.root)
-<<<<<<< HEAD
-=======
 
 
 def _save_episode_images_for_video(
@@ -1652,4 +1643,3 @@ def convert_image_to_video_dataset(
 
     # Return new dataset
     return LeRobotDataset(repo_id=repo_id, root=output_dir)
->>>>>>> sync/lerobot-v0.4.3

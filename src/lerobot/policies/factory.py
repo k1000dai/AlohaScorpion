@@ -51,15 +51,11 @@ from lerobot.processor.converters import (
     transition_to_batch,
     transition_to_policy_action,
 )
-<<<<<<< HEAD
-from lerobot.utils.constants import POLICY_POSTPROCESSOR_DEFAULT_NAME, POLICY_PREPROCESSOR_DEFAULT_NAME
-=======
 from lerobot.utils.constants import (
     ACTION,
     POLICY_POSTPROCESSOR_DEFAULT_NAME,
     POLICY_PREPROCESSOR_DEFAULT_NAME,
 )
->>>>>>> sync/lerobot-v0.4.3
 
 
 def get_policy_class(name: str) -> type[PreTrainedPolicy]:
@@ -99,13 +95,10 @@ def get_policy_class(name: str) -> type[PreTrainedPolicy]:
         from lerobot.policies.pi0.modeling_pi0 import PI0Policy
 
         return PI0Policy
-<<<<<<< HEAD
-=======
     elif name == "pi0_fast":
         from lerobot.policies.pi0_fast.modeling_pi0_fast import PI0FastPolicy
 
         return PI0FastPolicy
->>>>>>> sync/lerobot-v0.4.3
     elif name == "pi05":
         from lerobot.policies.pi05.modeling_pi05 import PI05Policy
 
@@ -261,11 +254,7 @@ def make_pre_post_processors(
             }
 
             # Also ensure postprocessing slices to env action dim and unnormalizes with dataset stats
-<<<<<<< HEAD
-            env_action_dim = policy_cfg.output_features["action"].shape[0]
-=======
             env_action_dim = policy_cfg.output_features[ACTION].shape[0]
->>>>>>> sync/lerobot-v0.4.3
             postprocessor_overrides["groot_action_unpack_unnormalize_v1"] = {
                 "stats": kwargs.get("dataset_stats"),
                 "normalize_min_max": True,
@@ -490,9 +479,6 @@ def make_policy(
     if ds_meta is not None:
         kwargs["dataset_meta"] = ds_meta
 
-<<<<<<< HEAD
-    if cfg.pretrained_path:
-=======
     if not cfg.pretrained_path and cfg.use_peft:
         raise ValueError(
             "Instantiating a policy with `use_peft=True` without a checkpoint is not supported since that requires "
@@ -500,13 +486,10 @@ def make_policy(
         )
 
     if cfg.pretrained_path and not cfg.use_peft:
->>>>>>> sync/lerobot-v0.4.3
         # Load a pretrained policy and override the config if needed (for example, if there are inference-time
         # hyperparameters that we want to vary).
         kwargs["pretrained_name_or_path"] = cfg.pretrained_path
         policy = policy_cls.from_pretrained(**kwargs)
-<<<<<<< HEAD
-=======
     elif cfg.pretrained_path and cfg.use_peft:
         # Load a pretrained PEFT model on top of the policy. The pretrained path points to the folder/repo
         # of the adapter and the adapter's config contains the path to the base policy. So we need the
@@ -530,7 +513,6 @@ def make_policy(
         policy = policy_cls.from_pretrained(**kwargs)
         policy = PeftModel.from_pretrained(policy, peft_pretrained_path, config=peft_config)
 
->>>>>>> sync/lerobot-v0.4.3
     else:
         # Make a fresh policy.
         policy = policy_cls(**kwargs)

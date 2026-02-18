@@ -112,9 +112,6 @@ class WandBLogger:
         artifact_name = f"{self._group}-{step_id}"
         artifact_name = get_safe_wandb_artifact_name(artifact_name)
         artifact = self._wandb.Artifact(artifact_name, type="model")
-<<<<<<< HEAD
-        artifact.add_file(checkpoint_dir / PRETRAINED_MODEL_DIR / SAFETENSORS_SINGLE_FILE)
-=======
         pretrained_model_dir = checkpoint_dir / PRETRAINED_MODEL_DIR
 
         # Check if this is a PEFT model (has adapter files instead of model.safetensors)
@@ -141,7 +138,6 @@ class WandBLogger:
             )
             return
 
->>>>>>> sync/lerobot-v0.4.3
         self._wandb.log_artifact(artifact)
 
     def log_dict(

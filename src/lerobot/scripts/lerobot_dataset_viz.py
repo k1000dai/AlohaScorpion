@@ -96,10 +96,7 @@ def visualize_dataset(
     ws_port: int = 9087,
     save: bool = False,
     output_dir: Path | None = None,
-<<<<<<< HEAD
-=======
     display_compressed_images: bool = False,
->>>>>>> sync/lerobot-v0.4.3
 ) -> Path | None:
     if save:
         assert output_dir is not None, (
@@ -141,14 +138,9 @@ def visualize_dataset(
 
             # display each camera image
             for key in dataset.meta.camera_keys:
-<<<<<<< HEAD
-                # TODO(rcadene): add `.compress()`? is it lossless?
-                rr.log(key, rr.Image(to_hwc_uint8_numpy(batch[key][i])))
-=======
                 img = to_hwc_uint8_numpy(batch[key][i])
                 img_entity = rr.Image(img).compress() if display_compressed_images else rr.Image(img)
                 rr.log(key, entity=img_entity)
->>>>>>> sync/lerobot-v0.4.3
 
             # display each dimension of action space (e.g. actuators command)
             if ACTION in batch:
@@ -271,8 +263,6 @@ def main():
         ),
     )
 
-<<<<<<< HEAD
-=======
     parser.add_argument(
         "--display-compressed-images",
         type=bool,
@@ -281,7 +271,6 @@ def main():
         help="If set, display compressed images in Rerun instead of uncompressed ones.",
     )
 
->>>>>>> sync/lerobot-v0.4.3
     args = parser.parse_args()
     kwargs = vars(args)
     repo_id = kwargs.pop("repo_id")

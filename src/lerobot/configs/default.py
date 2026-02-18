@@ -67,8 +67,6 @@ class EvalConfig:
                 f"to increase the number of episodes to match the batch size (e.g. `eval.n_episodes={self.batch_size}`), "
                 f"or lower the batch size (e.g. `eval.batch_size={self.n_episodes}`)."
             )
-<<<<<<< HEAD
-=======
 
 
 @dataclass
@@ -97,4 +95,3 @@ class PeftConfig:
     # the rank used for the adapter. In general a higher rank means more trainable parameters and closer to full
     # fine-tuning.
     r: int = 16
->>>>>>> sync/lerobot-v0.4.3

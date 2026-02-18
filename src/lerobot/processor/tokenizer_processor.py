@@ -23,28 +23,13 @@ token IDs and attention masks, which are then added to the observation dictionar
 
 from __future__ import annotations
 
-<<<<<<< HEAD
-=======
 import logging
->>>>>>> sync/lerobot-v0.4.3
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Any
 
 import torch
 
 from lerobot.configs.types import FeatureType, PipelineFeatureType, PolicyFeature
-<<<<<<< HEAD
-from lerobot.utils.constants import OBS_LANGUAGE_ATTENTION_MASK, OBS_LANGUAGE_TOKENS
-from lerobot.utils.import_utils import _transformers_available
-
-from .core import EnvTransition, TransitionKey
-from .pipeline import ObservationProcessorStep, ProcessorStepRegistry
-
-# Conditional import for type checking and lazy loading
-if TYPE_CHECKING or _transformers_available:
-    from transformers import AutoTokenizer
-else:
-=======
 from lerobot.utils.constants import (
     ACTION_TOKEN_MASK,
     ACTION_TOKENS,
@@ -61,7 +46,6 @@ if TYPE_CHECKING or _transformers_available:
     from transformers import AutoProcessor, AutoTokenizer
 else:
     AutoProcessor = None
->>>>>>> sync/lerobot-v0.4.3
     AutoTokenizer = None
 
 
@@ -155,11 +139,7 @@ class TokenizerProcessorStep(ObservationProcessorStep):
 
         return None
 
-<<<<<<< HEAD
-    def observation(self, observation: dict[str, Any]) -> dict[str, Any]:
-=======
     def observation(self, observation: RobotObservation) -> RobotObservation:
->>>>>>> sync/lerobot-v0.4.3
         """
         Tokenizes the task description and adds it to the observation dictionary.
 
@@ -295,8 +275,6 @@ class TokenizerProcessorStep(ObservationProcessorStep):
             )
 
         return features
-<<<<<<< HEAD
-=======
 
 
 @dataclass
@@ -550,4 +528,3 @@ class ActionTokenizerProcessorStep(ActionProcessorStep):
             The updated dictionary of policy features.
         """
         return features
->>>>>>> sync/lerobot-v0.4.3

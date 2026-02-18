@@ -49,10 +49,6 @@ from .hil_processor import (
     RewardClassifierProcessorStep,
     TimeLimitProcessorStep,
 )
-<<<<<<< HEAD
-from .joint_observations_processor import JointVelocityProcessorStep, MotorCurrentProcessorStep
-=======
->>>>>>> sync/lerobot-v0.4.3
 from .normalize_processor import NormalizerProcessorStep, UnnormalizerProcessorStep, hotswap_stats
 from .observation_processor import VanillaObservationProcessorStep
 from .pipeline import (
@@ -78,11 +74,7 @@ from .policy_robot_bridge import (
     RobotActionToPolicyActionProcessorStep,
 )
 from .rename_processor import RenameObservationsProcessorStep
-<<<<<<< HEAD
-from .tokenizer_processor import TokenizerProcessorStep
-=======
 from .tokenizer_processor import ActionTokenizerProcessorStep, TokenizerProcessorStep
->>>>>>> sync/lerobot-v0.4.3
 
 __all__ = [
     "ActionProcessorStep",
@@ -101,20 +93,12 @@ __all__ = [
     "ImageCropResizeProcessorStep",
     "InfoProcessorStep",
     "InterventionActionProcessorStep",
-<<<<<<< HEAD
-    "JointVelocityProcessorStep",
-=======
->>>>>>> sync/lerobot-v0.4.3
     "make_default_processors",
     "make_default_teleop_action_processor",
     "make_default_robot_action_processor",
     "make_default_robot_observation_processor",
     "MapDeltaActionToRobotActionStep",
     "MapTensorToDeltaActionDictStep",
-<<<<<<< HEAD
-    "MotorCurrentProcessorStep",
-=======
->>>>>>> sync/lerobot-v0.4.3
     "NormalizerProcessorStep",
     "Numpy2TorchActionProcessorStep",
     "ObservationProcessorStep",
@@ -135,10 +119,7 @@ __all__ = [
     "AddBatchDimensionProcessorStep",
     "RobotProcessorPipeline",
     "TokenizerProcessorStep",
-<<<<<<< HEAD
-=======
     "ActionTokenizerProcessorStep",
->>>>>>> sync/lerobot-v0.4.3
     "Torch2NumpyActionProcessorStep",
     "RobotActionToPolicyActionProcessorStep",
     "PolicyActionToRobotActionProcessorStep",

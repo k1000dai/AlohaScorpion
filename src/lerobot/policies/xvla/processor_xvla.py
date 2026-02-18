@@ -41,10 +41,7 @@ from lerobot.processor.converters import policy_action_to_transition, transition
 from lerobot.processor.core import EnvTransition, TransitionKey
 from lerobot.utils.constants import (
     OBS_IMAGES,
-<<<<<<< HEAD
-=======
     OBS_PREFIX,
->>>>>>> sync/lerobot-v0.4.3
     OBS_STATE,
     POLICY_POSTPROCESSOR_DEFAULT_NAME,
     POLICY_PREPROCESSOR_DEFAULT_NAME,
@@ -141,14 +138,9 @@ class LiberoProcessorStep(ObservationProcessorStep):
 
                 processed_obs[key] = img
         # Process robot_state into a flat state vector
-<<<<<<< HEAD
-        if "observation.robot_state" in processed_obs:
-            robot_state = processed_obs.pop("observation.robot_state")
-=======
         robot_state_str = OBS_PREFIX + "robot_state"
         if robot_state_str in processed_obs:
             robot_state = processed_obs.pop(robot_state_str)
->>>>>>> sync/lerobot-v0.4.3
 
             # Extract components
             eef_pos = robot_state["eef"]["pos"]  # (B, 3,)
@@ -184,13 +176,8 @@ class LiberoProcessorStep(ObservationProcessorStep):
         state_feats = {}
 
         # add our new flattened state
-<<<<<<< HEAD
-        state_feats["observation.state"] = PolicyFeature(
-            key="observation.state",
-=======
         state_feats[OBS_STATE] = PolicyFeature(
             key=OBS_STATE,
->>>>>>> sync/lerobot-v0.4.3
             shape=(20,),
             dtype="float32",
         )
@@ -262,11 +249,7 @@ class XVLAImageScaleProcessorStep(ProcessorStep):
         keys_to_scale = self.image_keys
         if keys_to_scale is None:
             # Auto-detect image keys
-<<<<<<< HEAD
-            keys_to_scale = [k for k in obs if k.startswith("observation.images.")]
-=======
             keys_to_scale = [k for k in obs if k.startswith(OBS_IMAGES)]
->>>>>>> sync/lerobot-v0.4.3
 
         # Scale each image
         for key in keys_to_scale:
@@ -322,11 +305,7 @@ class XVLAImageToFloatProcessorStep(ProcessorStep):
         keys_to_convert = self.image_keys
         if keys_to_convert is None:
             # Auto-detect image keys
-<<<<<<< HEAD
-            keys_to_convert = [k for k in obs if k.startswith("observation.images.")]
-=======
             keys_to_convert = [k for k in obs if k.startswith(OBS_IMAGES)]
->>>>>>> sync/lerobot-v0.4.3
 
         # Convert each image
         for key in keys_to_convert:
@@ -399,11 +378,7 @@ class XVLAImageNetNormalizeProcessorStep(ProcessorStep):
         keys_to_normalize = self.image_keys
         if keys_to_normalize is None:
             # Auto-detect image keys
-<<<<<<< HEAD
-            keys_to_normalize = [k for k in obs if k.startswith("observation.images.")]
-=======
             keys_to_normalize = [k for k in obs if k.startswith(OBS_IMAGES)]
->>>>>>> sync/lerobot-v0.4.3
 
         # Normalize each image
         for key in keys_to_normalize:

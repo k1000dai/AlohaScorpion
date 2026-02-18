@@ -177,15 +177,9 @@ def rollout(
             action = policy.select_action(observation)
         action = postprocessor(action)
 
-<<<<<<< HEAD
-        action_transition = {"action": action}
-        action_transition = env_postprocessor(action_transition)
-        action = action_transition["action"]
-=======
         action_transition = {ACTION: action}
         action_transition = env_postprocessor(action_transition)
         action = action_transition[ACTION]
->>>>>>> sync/lerobot-v0.4.3
 
         # Convert to CPU / numpy.
         action_numpy: np.ndarray = action.to("cpu").numpy()
@@ -284,11 +278,6 @@ def eval_policy(
         raise ValueError("If max_episodes_rendered > 0, videos_dir must be provided.")
 
     if not isinstance(policy, PreTrainedPolicy):
-<<<<<<< HEAD
-        raise ValueError(
-            f"Policy of type 'PreTrainedPolicy' is expected, but type '{type(policy)}' was provided."
-        )
-=======
         exc = ValueError(
             f"Policy of type 'PreTrainedPolicy' is expected, but type '{type(policy)}' was provided."
         )
@@ -299,7 +288,6 @@ def eval_policy(
                 raise exc
         except ImportError:
             raise exc from None
->>>>>>> sync/lerobot-v0.4.3
 
     start = time.time()
     policy.eval()
@@ -528,16 +516,12 @@ def eval_main(cfg: EvalPipelineConfig):
     logging.info(colored("Output dir:", "yellow", attrs=["bold"]) + f" {cfg.output_dir}")
 
     logging.info("Making environment.")
-<<<<<<< HEAD
-    envs = make_env(cfg.env, n_envs=cfg.eval.batch_size, use_async_envs=cfg.eval.use_async_envs)
-=======
     envs = make_env(
         cfg.env,
         n_envs=cfg.eval.batch_size,
         use_async_envs=cfg.eval.use_async_envs,
         trust_remote_code=cfg.trust_remote_code,
     )
->>>>>>> sync/lerobot-v0.4.3
 
     logging.info("Making policy.")
 

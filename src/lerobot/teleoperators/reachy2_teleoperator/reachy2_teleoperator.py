@@ -13,13 +13,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-<<<<<<< HEAD
-
-import logging
-import time
-
-from reachy2_sdk import ReachySDK
-=======
 from __future__ import annotations
 
 import logging
@@ -35,7 +28,6 @@ else:
 
 from lerobot.utils.decorators import check_if_already_connected, check_if_not_connected
 from lerobot.utils.errors import DeviceNotConnectedError
->>>>>>> sync/lerobot-v0.4.3
 
 from ..teleoperator import Teleoperator
 from .config_reachy2_teleoperator import Reachy2TeleoperatorConfig
@@ -93,10 +85,7 @@ class Reachy2Teleoperator(Teleoperator):
 
     def __init__(self, config: Reachy2TeleoperatorConfig):
         super().__init__(config)
-<<<<<<< HEAD
-=======
 
->>>>>>> sync/lerobot-v0.4.3
         self.config = config
         self.reachy: None | ReachySDK = None
 
@@ -138,19 +127,12 @@ class Reachy2Teleoperator(Teleoperator):
     def is_connected(self) -> bool:
         return self.reachy.is_connected() if self.reachy is not None else False
 
-<<<<<<< HEAD
-    def connect(self, calibrate: bool = True) -> None:
-        self.reachy = ReachySDK(self.config.ip_address)
-        if not self.is_connected:
-            raise ConnectionError()
-=======
     @check_if_already_connected
     def connect(self, calibrate: bool = True) -> None:
         self.reachy = ReachySDK(self.config.ip_address)
 
         if not self.is_connected:
             raise DeviceNotConnectedError()
->>>>>>> sync/lerobot-v0.4.3
         logger.info(f"{self} connected.")
 
     @property
@@ -163,28 +145,6 @@ class Reachy2Teleoperator(Teleoperator):
     def configure(self) -> None:
         pass
 
-<<<<<<< HEAD
-    def get_action(self) -> dict[str, float]:
-        start = time.perf_counter()
-
-        if self.reachy and self.is_connected:
-            if self.config.use_present_position:
-                joint_action = {
-                    k: self.reachy.joints[v].present_position for k, v in self.joints_dict.items()
-                }
-            else:
-                joint_action = {k: self.reachy.joints[v].goal_position for k, v in self.joints_dict.items()}
-
-            if not self.config.with_mobile_base:
-                dt_ms = (time.perf_counter() - start) * 1e3
-                logger.debug(f"{self} read action: {dt_ms:.1f}ms")
-                return joint_action
-
-            if self.config.use_present_position:
-                vel_action = {k: self.reachy.mobile_base.odometry[v] for k, v in REACHY2_VEL.items()}
-            else:
-                vel_action = {k: self.reachy.mobile_base.last_cmd_vel[v] for k, v in REACHY2_VEL.items()}
-=======
     @check_if_not_connected
     def get_action(self) -> dict[str, float]:
         start = time.perf_counter()
@@ -204,7 +164,6 @@ class Reachy2Teleoperator(Teleoperator):
             vel_action = {k: self.reachy.mobile_base.odometry[v] for k, v in REACHY2_VEL.items()}
         else:
             vel_action = {k: self.reachy.mobile_base.last_cmd_vel[v] for k, v in REACHY2_VEL.items()}
->>>>>>> sync/lerobot-v0.4.3
         dt_ms = (time.perf_counter() - start) * 1e3
         logger.debug(f"{self} read action: {dt_ms:.1f}ms")
         return {**joint_action, **vel_action}
@@ -213,9 +172,5 @@ class Reachy2Teleoperator(Teleoperator):
         raise NotImplementedError
 
     def disconnect(self) -> None:
-<<<<<<< HEAD
-        if self.reachy and self.is_connected:
-=======
         if self.is_connected:
->>>>>>> sync/lerobot-v0.4.3
             self.reachy.disconnect()

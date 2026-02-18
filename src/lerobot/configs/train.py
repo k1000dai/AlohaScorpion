@@ -24,11 +24,7 @@ from huggingface_hub.errors import HfHubHTTPError
 
 from lerobot import envs
 from lerobot.configs import parser
-<<<<<<< HEAD
-from lerobot.configs.default import DatasetConfig, EvalConfig, WandBConfig
-=======
 from lerobot.configs.default import DatasetConfig, EvalConfig, PeftConfig, WandBConfig
->>>>>>> sync/lerobot-v0.4.3
 from lerobot.configs.policies import PreTrainedConfig
 from lerobot.optim import OptimizerConfig
 from lerobot.optim.schedulers import LRSchedulerConfig
@@ -69,10 +65,7 @@ class TrainPipelineConfig(HubMixin):
     scheduler: LRSchedulerConfig | None = None
     eval: EvalConfig = field(default_factory=EvalConfig)
     wandb: WandBConfig = field(default_factory=WandBConfig)
-<<<<<<< HEAD
-=======
     peft: PeftConfig | None = None
->>>>>>> sync/lerobot-v0.4.3
 
     # RA-BC (Reward-Aligned Behavior Cloning) parameters
     use_rabc: bool = False  # Enable reward-weighted training

@@ -13,11 +13,7 @@
 # limitations under the License.
 
 import abc
-<<<<<<< HEAD
-from dataclasses import dataclass, field
-=======
 from dataclasses import dataclass, field, fields
->>>>>>> sync/lerobot-v0.4.3
 from typing import Any
 
 import draccus
@@ -72,8 +68,6 @@ class EnvConfig(draccus.ChoiceRegistry, abc.ABC):
         raise NotImplementedError()
 
 
-<<<<<<< HEAD
-=======
 @dataclass
 class HubEnvConfig(EnvConfig):
     """Base class for environments that delegate creation to a hub-hosted make_env.
@@ -90,7 +84,6 @@ class HubEnvConfig(EnvConfig):
         return {}
 
 
->>>>>>> sync/lerobot-v0.4.3
 @EnvConfig.register_subclass("aloha")
 @dataclass
 class AlohaEnv(EnvConfig):
@@ -391,8 +384,6 @@ class MetaworldEnv(EnvConfig):
             "obs_type": self.obs_type,
             "render_mode": self.render_mode,
         }
-<<<<<<< HEAD
-=======
 
 
 @EnvConfig.register_subclass("isaaclab_arena")
@@ -461,4 +452,3 @@ class IsaaclabArenaEnv(HubEnvConfig):
     @property
     def gym_kwargs(self) -> dict:
         return {}
->>>>>>> sync/lerobot-v0.4.3

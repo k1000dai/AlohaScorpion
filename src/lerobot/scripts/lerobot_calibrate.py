@@ -36,41 +36,25 @@ from lerobot.cameras.realsense.configuration_realsense import RealSenseCameraCon
 from lerobot.robots import (  # noqa: F401
     Robot,
     RobotConfig,
-<<<<<<< HEAD
-=======
     alohamini_scorpion,
     bi_so_follower,
->>>>>>> sync/lerobot-v0.4.3
     hope_jr,
     koch_follower,
     lekiwi,
     make_robot_from_config,
     omx_follower,
-<<<<<<< HEAD
-    so100_follower,
-    so101_follower,
-=======
     so_follower,
->>>>>>> sync/lerobot-v0.4.3
 )
 from lerobot.teleoperators import (  # noqa: F401
     Teleoperator,
     TeleoperatorConfig,
-<<<<<<< HEAD
-=======
     bi_so_leader,
     dual_scorpion_leader,
->>>>>>> sync/lerobot-v0.4.3
     homunculus,
     koch_leader,
     make_teleoperator_from_config,
     omx_leader,
-<<<<<<< HEAD
-    so100_leader,
-    so101_leader,
-=======
     so_leader,
->>>>>>> sync/lerobot-v0.4.3
 )
 from lerobot.utils.import_utils import register_third_party_plugins
 from lerobot.utils.utils import init_logging

@@ -16,10 +16,6 @@
 
 import logging
 from collections import deque
-<<<<<<< HEAD
-from typing import Any
-=======
->>>>>>> sync/lerobot-v0.4.3
 
 import numpy as np
 import torch
@@ -143,11 +139,7 @@ def prepare_observation_for_inference(
 
 
 def build_inference_frame(
-<<<<<<< HEAD
-    observation: dict[str, Any],
-=======
     observation: RobotObservation,
->>>>>>> sync/lerobot-v0.4.3
     device: torch.device,
     ds_features: dict[str, dict],
     task: str | None = None,

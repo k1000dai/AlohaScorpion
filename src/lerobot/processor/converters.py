@@ -23,11 +23,7 @@ from typing import Any
 import numpy as np
 import torch
 
-<<<<<<< HEAD
-from lerobot.utils.constants import ACTION, DONE, OBS_PREFIX, REWARD, TRUNCATED
-=======
 from lerobot.utils.constants import ACTION, DONE, INFO, OBS_PREFIX, REWARD, TRUNCATED
->>>>>>> sync/lerobot-v0.4.3
 
 from .core import EnvTransition, PolicyAction, RobotAction, RobotObservation, TransitionKey
 
@@ -180,11 +176,7 @@ def _extract_complementary_data(batch: dict[str, Any]) -> dict[str, Any]:
 
 
 def create_transition(
-<<<<<<< HEAD
-    observation: dict[str, Any] | None = None,
-=======
     observation: RobotObservation | None = None,
->>>>>>> sync/lerobot-v0.4.3
     action: PolicyAction | RobotAction | None = None,
     reward: float = 0.0,
     done: bool = False,
@@ -392,11 +384,7 @@ def transition_to_batch(transition: EnvTransition) -> dict[str, Any]:
         REWARD: transition.get(TransitionKey.REWARD, 0.0),
         DONE: transition.get(TransitionKey.DONE, False),
         TRUNCATED: transition.get(TransitionKey.TRUNCATED, False),
-<<<<<<< HEAD
-        "info": transition.get(TransitionKey.INFO, {}),
-=======
         INFO: transition.get(TransitionKey.INFO, {}),
->>>>>>> sync/lerobot-v0.4.3
     }
 
     # Add complementary data.
